@@ -1,8 +1,294 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>数据结构之栈-c语言实现</title>
+    <url>/2020/01/30/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%A0%88-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/</url>
+    <content><![CDATA[<p>在上一篇文章中说过，栈在实现上分为顺序栈和链式栈两种。</p>
+<a id="more"></a>
+
+<p>顺序栈： 用数组实现的栈</p>
+<p>链式栈： 用链表实现的栈</p>
+<p>因为栈就是一种“功能受限”的顺序表，所以在实现的时候，在之前数组和链表的基础上进行修改即可达到效果。</p>
+<p>顺序栈</p>
+<p>在实现顺序栈的时候，为了更好的表示栈顶元素top，我将之前数组中的使用个数used替换为top，在其他方面并没有太大的变化。</p>
+<p>需要下载代码请移步至文末。</p>
+<p><img src="/2020/01/30/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%A0%88-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/carbon-5.png" alt></p>
+<p>链式栈</p>
+<p>链式栈在原先链表的基础上省去了不少内容，像按位置插入，删除指定内容等，这些都是由于栈的特性决定了只能从一端进行插入和删除，也正是因为如此，所以在单链表的基础上进行修改的，使用双链表没有太大的意义。</p>
+<p>需要下载代码请移步至文末。</p>
+<p><img src="/2020/01/30/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%A0%88-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/carbon-1-5.png" alt></p>
+<p>代码：</p>
+<p>顺序栈：<a href="https://github.com/veselwuxin/code.seclibs.com/blob/master/c/array%20Stack.c" target="_blank" rel="noopener">GitHub</a></p>
+<p>链式栈：<a href="https://github.com/veselwuxin/code.seclibs.com/blob/master/c/Linked%20list%20Stack.c" target="_blank" rel="noopener">GitHub</a></p>
+]]></content>
+      <categories>
+        <category>数据结构与算法</category>
+        <category>C/C++</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>数据结构之栈</title>
+    <url>/2020/01/29/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%A0%88/</url>
+    <content><![CDATA[<p>前面说完了数组和列表两个常用的数据结构，虽然它们的实现代码还很粗糙，但是不妨碍自己对数据结构的深入理解，接下来就说一说<strong>栈(stack)</strong></p>
+<a id="more"></a>
+
+<p>栈，可以用一个很常见的事物来说明，比如我们放了一摞盘子，如果我们想取走下面的某一个盘子，就必须先将上面的盘子挨个移走才可以，跟小时候玩的汉诺塔益智游戏是一样的结构， 也就是后放上去的先拿出来，先放进去的后拿出来。</p>
+<p>从栈的特性上来看，栈是一种受限制的线性表，它只允许在一端进行插入和删除操作，在功能实现上完全可以用数组和链表来代替，但是栈也有它自己的好处，因为只允许在一端进行插入和删除，它所暴露的操作接口就比数组和链表少很多，也就更加安全，牺牲了灵活性而增加了安全性。</p>
+<p>对于栈来说，需要进行的操作只有两种，入栈和出栈，即在栈顶进行插入和删除操作，它们所涉及到的数据变化是个别数据的操作，而且入栈和出栈也就只有对栈顶元素操作时的几个临时变量，所以它的时间复杂度和空间复杂度均为O(1)。</p>
+<p>在代码实现上，它既可以使用数组来实现，也可以使用链表来实现，用数组实现的栈，我们叫作顺序栈，用链表实现的栈，我们叫作链式栈。</p>
+<p>这里还会涉及到的一个方法就是如何对栈进行<strong>动态扩容</strong>，对于链式栈来说，虽然不存在受固定大小的限制，但是大量的next指针，对内存的消耗也是比较巨大的。</p>
+<p>动态扩容就是在空间不够时，重新创建一块比当前内存空间大的空间，然后将所有的数据都拷贝过去，这样就实现了动态扩容，一般新创建的内存空间的大小都是之前空间大小的0.5倍或1倍。</p>
+<p>大致的过程如下图所示</p>
+<p><img src="/2020/01/29/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%A0%88/b193adf5db4356d8ab35a1d32142b3da-1024x739.jpg" alt></p>
+<p>在对于栈的理解当中，还要注意一点，内存中的栈与数据结构中的栈是完全不同的两个概念，需要特别注意一下</p>
+<blockquote>
+<p>引用自极客时间- 阿杜S考特</p>
+<p>内存中的堆栈和数据结构堆栈不是一个概念，可以说内存中的堆栈是真实存在的物理区，数据结构中的堆栈是抽象的数据存储结构。<br>内存空间在逻辑上分为三部分：代码区、静态数据区和动态数据区，动态数据区又分为栈区和堆区。<br>代码区：存储方法体的二进制代码。高级调度（作业调度）、中级调度（内存调度）、低级调度（进程调度）控制代码区执行代码的切换。<br>静态数据区：存储全局变量、静态变量、常量，常量包括final修饰的常量和String常量。系统自动分配和回收。<br>栈区：存储运行方法的形参、局部变量、返回值。由系统自动分配和回收。<br>堆区：new一个对象的引用或地址存储在栈区，指向该对象存储在堆区中的真实数据。</p>
+</blockquote>
+<p>对于栈的说明就这么多，接下来就是尝试对它进行代码实现。</p>
+<hr>
+<p>参考文档：</p>
+<p>极客时间-数据结构与算法之美</p>
+]]></content>
+      <categories>
+        <category>数据结构与算法</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>数据结构之双向链表-c语言实现</title>
+    <url>/2020/01/28/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E5%8F%8C%E5%90%91%E9%93%BE%E8%A1%A8-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/</url>
+    <content><![CDATA[<p>这次完成了双向链表的代码实现，同时也发现了一处单链表中同样存在的错误，如果有兴趣可以回去再研究一下。</p>
+<a id="more"></a>
+
+<p>双向链表相对于单链表来说，复杂之处在于对数据的插入和删除操作时，如何处理指针的指向关系，这个时候画图来帮助理解是一个非常好的方式。</p>
+<p>以下为双向链表的具体实现，需要下载代码请移步至文末</p>
+<p><img src="/2020/01/28/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E5%8F%8C%E5%90%91%E9%93%BE%E8%A1%A8-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/carbon-3-1.png" alt></p>
+<p>代码：<a href="https://github.com/veselwuxin/code.seclibs.com/blob/master/c/Doubly%20linked%20list.c" target="_blank" rel="noopener">GitHub</a></p>
+<hr>
+<p><strong>2020/1/31更新</strong></p>
+<p>文中代码有些许错误，请查看最新代码</p>
+<p>代码：<a href="https://github.com/veselwuxin/code.seclibs.com/blob/master/c/Doubly%20linked%20list.c" target="_blank" rel="noopener">GitHub</a></p>
+]]></content>
+      <categories>
+        <category>数据结构与算法</category>
+        <category>C/C++</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>数据结构之单链表-c语言实现</title>
+    <url>/2020/01/27/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E5%8D%95%E9%93%BE%E8%A1%A8-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/</url>
+    <content><![CDATA[<p>常用的链表有单链表、双向链表和循环链表，这次只完成了单链表的c语言实现，在写代码中所遇到的问题在代码注释中也都有标注，在实现上最关键的还是对整体结构的理解，只有对整体结构有一定的了解，才能在具体的代码实现中少走很多的弯路，在具体的代码实现过程中，要着重关注每一个变量的内容和具体的含义，只有搞清楚了这一点才能在实现的时候不出现一些莫名其妙的问题。</p>
+<a id="more"></a>
+
+<p>比如在这次实现中，就碰到了在插入初始插入数据的时候，输出的内容一直与插入时相反，也就是说，起初预想的是每次插入数据都是在最后一位进行插入，而实际情况是从开头进行插入的，在仔细研究完代码后，发现了问题所在</p>
+<p><img src="/2020/01/27/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E5%8D%95%E9%93%BE%E8%A1%A8-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/carbon-3.png" alt></p>
+<p>我们在第一次插入数据的时候，情况是这样的</p>
+<p><img src="/2020/01/27/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E5%8D%95%E9%93%BE%E8%A1%A8-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/20200128215646.png" alt></p>
+<p>但是如果再继续往后面插入的时候，由于list所指的内存地址并没有改变，所以插入的情况是这样的</p>
+<p><img src="/2020/01/27/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E5%8D%95%E9%93%BE%E8%A1%A8-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/20200128220328.png" alt></p>
+<p>就造成了输出与输入呈倒序的方式，所以只需要将list所指向的内存地址进行变化就可以了，修改后的代码如下</p>
+<p><img src="/2020/01/27/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E5%8D%95%E9%93%BE%E8%A1%A8-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/carbon-1-3.png" alt></p>
+<p>所以对每个变量所代表的含义要特别清楚才能在代码实现的时候更加的清晰。</p>
+<p>整体代码如下，如果需要下载代码请移步到文末</p>
+<p><img src="/2020/01/27/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E5%8D%95%E9%93%BE%E8%A1%A8-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/carbon-2-2.png" alt></p>
+<p>代码：<a href="https://github.com/veselwuxin/code.seclibs.com/blob/master/c/Single%20Linked%20list.c" target="_blank" rel="noopener">GitHub</a></p>
+<hr>
+<p><strong>2020/1/29更新</strong></p>
+<p>在文章发出之后，有收到朋友对代码的批评</p>
+<p><img src="/2020/01/27/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E5%8D%95%E9%93%BE%E8%A1%A8-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/Untitled-2.png" alt></p>
+<p>这里我确实要说一下对不起了，自己对c语言确实没有完全的了解，现在也是在借助学数据结构的过程练一练代码，在学校学的c语言本就c不c，c++不c++的，在之后的运用当中，我尽力去避免这些错误的出现，希望大家可以多多帮助，多多提问题。</p>
+<p>我已对这两处问题进行修改，代码如下</p>
+<p>代码：<a href="https://github.com/veselwuxin/code.seclibs.com/blob/master/c/Single%20Linked%20list.c" target="_blank" rel="noopener">GitHub</a></p>
+<hr>
+<p><strong>2020/1/31更新</strong></p>
+<p>继续对代码进行了修改，请查看最新链接</p>
+<p>代码：<a href="https://github.com/veselwuxin/code.seclibs.com/blob/master/c/Single%20Linked%20list.c" target="_blank" rel="noopener">GitHub</a></p>
+]]></content>
+      <categories>
+        <category>数据结构与算法</category>
+        <category>C/C++</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>数据结构之链表</title>
+    <url>/2020/01/26/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E9%93%BE%E8%A1%A8/</url>
+    <content><![CDATA[<p>前面讲了数据结构中最常用、最基础的数组，接下来说一说数据结构中另一个比较基础比较常用的数据结构——链表，相比于数组来说，链表更为复杂一点，在理解和实现上都比较困难。</p>
+<a id="more"></a>
+
+<p>首先数组必须是一段连续的内存空间来进行存储的，即使剩余的内存碎片整合在一起大于所需要的内存也是不能申请成功的，而链表则不然，它不需要连续的内存空间，而是靠“指针”将不连续的内存空间都连接到一起，如果数组储存一个数据需要一个空间，那单链表就需要两个，注意是单链表，一个用来存数据，一个用来存下一块内存空间的地址，具体表现如下图所示</p>
+<p><img src="/2020/01/26/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E9%93%BE%E8%A1%A8/d5d5bee4be28326ba3c28373808a62cd.jpg" alt></p>
+<p>上面说数组和链表所占空间的大小的时候，专门说了是单链表，因为我们常用的链表形式有单链表、双向链表和循环链表等，单链表是其中最简单、最常见的一个。</p>
+<p>如下图就是单链表的结构图，每一块我们都将它称为一个结点，在需要说明当前结点的后一个结点时，我们常称为当前结点的后继结点，其中date区域是用来存放数据的，next区域是存放指针指向下一块内存空间的，我们将它称为后继指针next。</p>
+<p><img src="/2020/01/26/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E9%93%BE%E8%A1%A8/b93e7ade9bb927baad1348d9a806ddeb.jpg" alt></p>
+<p>在图中可以看出来，第一个和最后一个结点是比较特殊的，第一个结点也叫做头结点，它存储的是整个链表的首地址，也叫做基地址，有了首地址，我们就可以遍历出来整个链表中所有的元素；最后一个结点也叫做尾结点，它是没有后继结点的，所以它的后继指针next存放的是NULL，用来表示链表已经结束了。</p>
+<p>与数组一样，链表也支持查找、插入和删除操作。但是链表进行插入和删除操作是非常的高效的，对于数组来说，它需要有连续的内存空间，所以每次插入和删除都需要大量的数据移动操作，而链表本身就不需要连续的内存空间，所以插入和删除的时候，只需要更改next的指向，就可以完成插入和删除操作了，它所对应的时间复杂度为O(1)。</p>
+<p><img src="/2020/01/26/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E9%93%BE%E8%A1%A8/452e943788bdeea462d364389bd08a17.jpg" alt></p>
+<p>但是有利就有弊，数组因为内存空间连续，所以支持随机访问，知道首地址、数据长度和索引，便可以计算出内存地址，但是在插入和删除的时候就会有大量的数据移动操作；链表恰恰相反，因为内存空间不连续，所以在插入和删除的时候，只需要更改后继指针next就可以了，但是在需要访问指定位置的数据内容时，就需要从头结点开始遍历，一直到所需要查询的结点为止，其时间复杂度为O(n)。</p>
+<p>接下来我们来看循环链表和双向链表。</p>
+<p>循环链表是特殊的单链表，单链表的尾结点是指向空地址NULL的，循环链表的尾节点指向了头结点。</p>
+<p><img src="/2020/01/26/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E9%93%BE%E8%A1%A8/86cb7dc331ea958b0a108b911f38d155.jpg" alt></p>
+<p>与单链表相比，它更适合从尾结点走到头结点，对于一些环形结构的数据，循环链表就更加适合。</p>
+<p>接下来说双向链表，双向链表是更加常用的一个链表结构，与单链表相比，它的date数据区域有前后两个指针，前驱指针prev和后继指针next，那么它储存一个数据所占用的空间就更大了，还是用开头的那个例子，加入数组占一个空间，那单链表就占用两个空间，双向链表就需要占用三个空间。</p>
+<p><img src="/2020/01/26/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E9%93%BE%E8%A1%A8/cbc8ab20276e2f9312030c313a9ef70b.jpg" alt></p>
+<p>虽然它占用了更多的空间，但是它也比前面的两个类型更加的灵活，双向链表在处理查询、插入和删除操作的时候，与单链表类似，但是在一些情况下，它比单链表更加的高效。</p>
+<p>假如，我们要删除指定指针所指向的结点，在这个情况下，我们要删除结点的时候，首先需要知道删除结点的前驱结点，然后将前驱结点的后继指针指向删除结点的后继结点。因为单链表不能直接获取到当前结点的前驱结点，所以需要从头开始遍历，直到某一结点的next指向了删除结点，就表明那一个结点为删除结点的前驱结点，其时间复杂度为O(n)。而对于双向链表来说，便可以直接获取到删除结点的前驱结点，时间复杂度为O(1)。同样在指定结点前插入某个节点，双向链表也一样更加具有优势。</p>
+<p>再假如，如果要查找的链表是一个有序链表，那么使用双向链表便可以非常轻松的使用二分法来进行查找。</p>
+<hr>
+<p>参考文档</p>
+<p>极客时间-数据结构与算法之美</p>
+]]></content>
+      <categories>
+        <category>数据结构与算法</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>数据结构之数组-c代码实现</title>
+    <url>/2020/01/22/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%95%B0%E7%BB%84-c%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/</url>
+    <content><![CDATA[<p>在上一篇文章里讲了数组的具体内容，然后自己使用c语言对数组进行了实现。</p>
+<a id="more"></a>
+
+<p>其中定义了一个结构体，定义了长度、已使用长度和地址指针。</p>
+<p><img src="/2020/01/22/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%95%B0%E7%BB%84-c%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/carbon-2.png" alt></p>
+<p>定义alloc函数来分配内存空间</p>
+<p><img src="/2020/01/22/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%95%B0%E7%BB%84-c%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/carbon-1-2.png" alt></p>
+<p>之后便是插入元素的insert函数、打印数组的dump函数、搜索数组的search函数和删除数组的del函数</p>
+<p>所有的操作步骤都是在main函数中提前定义好了，来进行验证前面所实现的函数</p>
+<p>如果需要下载代码，请移步文章最后。</p>
+<p><img src="/2020/01/22/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%95%B0%E7%BB%84-c%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/carbon-2-1.png" alt></p>
+<p>运行结果如下</p>
+<p><img src="/2020/01/22/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%95%B0%E7%BB%84-c%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/Untitled-1.png" alt></p>
+<p>代码：<a href="https://github.com/veselwuxin/code.seclibs.com/blob/master/c/array.c" target="_blank" rel="noopener">GitHub</a></p>
+<hr>
+<p><strong>2020/1/31更新</strong></p>
+<p>文中代码有些许错误，请查看最新代码</p>
+<p>代码：<a href="https://github.com/veselwuxin/code.seclibs.com/blob/master/c/array.c" target="_blank" rel="noopener">GitHub</a></p>
+]]></content>
+      <categories>
+        <category>数据结构与算法</category>
+        <category>C/C++</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>数据结构之数组</title>
+    <url>/2020/01/21/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%95%B0%E7%BB%84/</url>
+    <content><![CDATA[<p>在说数组之前咱们先明确两个概念，什么是<strong>线性表</strong>，什么是<strong>非线性表</strong></p>
+<a id="more"></a>
+
+<p>顾名思义，线性表就是把数据排成一条，每个数据只有前后两种情况，常见的线性表有<strong>数组、链表、队列、栈</strong>等</p>
+<p><img src="/2020/01/21/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%95%B0%E7%BB%84/b6b71ec46935130dff5c4b62cf273477.jpg" alt></p>
+<p>那非线性表就更好理解了，数据不是按照一条线来排列的，每个数据并不只有前后两个方向，常见的有<strong>二叉树、堆、图</strong>等</p>
+<p><img src="/2020/01/21/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%95%B0%E7%BB%84/6ebf42641b5f98f912d36f6bf86f6569.jpg" alt></p>
+<p>明白了这个概念之后，咱们再来说数组，什么是数组？</p>
+<p>数组不仅是大多数编程语言中的一个数据类型，它更是一个最基础的数据结构。</p>
+<p><strong>数组（Array）是一种线性表数据结构。它用一组连续的内存空间，来存储一组具有相同类型的数据。</strong></p>
+<p>关于线性表前面已经说过了，接下来说具有连续的内存空间、存储相同类型的数据，也正是因为这一点才使数组有了<strong>随机访问</strong>的特性。</p>
+<p>我们拿下面这个例子来进行说明，有一个长度为10的int类型的数组，我们给它分配一块连续内存空间 1000～1039，内存块的首地址为1000</p>
+<p><img src="/2020/01/21/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%95%B0%E7%BB%84/98df8e702b14096e7ee4a5141260cdc4.jpg" alt></p>
+<p>当我们需要访问其中的数据的时候，计算机会先通过一个寻址公式来找到内存地址，然后再读取其中的数据。</p>
+<p>在数组中我们使用的寻址公式为</p>
+<p>[mark]a[i]_address = base_address + i * data_type_size[/mark]</p>
+<p>base_address为内存块的首地址1000，data_type_size为数据类型的大小，这里我们使用的是int类型，所以data_type_size为4个字节，也正是这个原因，在很多语言中，都将数组的第一个下标定为0，因为在寻址的时候，可以直接得到内存地址，而不需要再将数值减一后再进行计算，虽然我们口算很简单，但是在CPU中，它所进行的运算还是相当多的。</p>
+<p>当我们需要得到数组中第一个元素的内容时，便直接套公式1000+0*4=1000，便直接得到了内存地址。</p>
+<p>所以数组适合查询，支持随机访问，在根据下标进行随机访问时时间复杂度为O(1)，这里需要注意一下，说数组的时间复杂度的时候一定要说明在跟进下标进行随机访问的时候，因为如果使用二分查找的话，即便已经进行过排序的数组，时间复杂度也是O(logn)。</p>
+<p>但是数组的随机访问的特性有利有弊，因为数组要保证空间是连续的，所以在增加和删除的时候，就需要进行大量的操作将数据进行移动，将是非常低效的。</p>
+<p>我们先来说<strong>插入操作</strong>，假如数组的长度为x，那么如果要在第y个位置插入一个数据，那么就需要将y到x的所有数据都往后挪一位，将第y个位置腾出来。</p>
+<p>我们来看一下它所涉及到的时间复杂度，如果插入的数据在最后一个，就不需要进行移动，最好时间复杂度为O(1)；如果插入的数据在第一个，则后面的每一个数据都需要往后挪一个，最坏时间复杂度为O(n)；因为在每一个位置插入的概率都是一样的，所以平均时间复杂度为(1+2+…+n)/n=O(n)。</p>
+<p>当然这是对数组数据是有序的情况下来说的，如果数据是无序的话，就不需要这些操作了，如果要在第y位插入数据，只需要将第y位的数据移动到整个数组的最后面，然后再将需要插入的数据插入即可，这个时候的时间复杂度就降为了O(1)。</p>
+<p>接下来说<strong>删除操作</strong>，与插入数据类似，如果要删除第y位的数据，就需要将y到n的数据都往前挪一个，否则内存空间就不连续了，如果删除数组末尾的数据，最好时间复杂度为 O(1)；如果删除开头的数据，最坏时间复杂度为 O(n)，删除每一个数据的概率是相同的，平均时间复杂度为 O(n)。</p>
+<p>数组到这里也就结束了，再接着就是代码实现。</p>
+<hr>
+<p>参考文档</p>
+<p>极客时间-数据结构和算法之美</p>
+]]></content>
+      <categories>
+        <category>数据结构与算法</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>时间复杂度分析</title>
+    <url>/2020/01/20/%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%E5%88%86%E6%9E%90/</url>
+    <content><![CDATA[<p>在上一篇文章中我们提到了时间复杂度大O分析法的使用，这次继续来探究时间复杂度的分析</p>
+<a id="more"></a>
+
+<p>我们先来看一下下面这段代码</p>
+<p><img src="/2020/01/20/%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%E5%88%86%E6%9E%90/carbon-1.png" alt></p>
+<p>这段代码的作用是在数组中寻找x的位置，找到了直接返回位置，没有找到的话返回-1，用上一篇文章所学到的知识，可以很清楚的看出来，这段代码的时间复杂度为O(n)</p>
+<p>但是这段代码明显还有优化的空间，如果我们在数组中间寻找到x的话，就不需要把整个数组都循环一边了，所以可以优化为下面这段代码。</p>
+<p><img src="/2020/01/20/%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%E5%88%86%E6%9E%90/carbon-1-1.png" alt></p>
+<p>如果在这种情况下的话，就不能用上一次所说到的方法来衡量了，因为我们不知道需要寻找的x所在的位置在哪里，如果在第一个的话，它的时间复杂度就是O(1)，如果这个数组里没有的话，就需要全部遍历一遍，它的时间复杂度就是O(n)，这里就需要引入<strong>最好时间复杂度</strong>和<strong>最坏时间复杂度</strong></p>
+<p>顾名思义，最好时间复杂度就是在最理想的状态下的时间复杂度，就是我们前面说的，所需要找的x恰好是数组的第一个字符，时间复杂度为O(1)</p>
+<p>最坏时间复杂度就是在最糟糕的情况下的时间复杂度，就是前面说的需要寻找的x不在数组中的情况，时间复杂度就是O(n)</p>
+<p>但是问题又来了，不管是最好还是最坏，它们发生的概率都是非常小的，都不能真正代表它的时间复杂度，这里我们就需要再引入一个概念：<strong>平均时间复杂度</strong></p>
+<p>还是前面的例子，我们把x在每一个位置上所需要便利的个数都加起来然后再处以总次数n+1来求平均，这样的话我们就能够得到平均时间复杂度了</p>
+<p><img src="/2020/01/20/%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%E5%88%86%E6%9E%90/d889a358b8eccc5bbb90fc16e327a22f.jpg" alt></p>
+<p>这里提供一个化简的思路，使用高中所学的倒序相加法来进行化简，在化简得到这个值以后，因为在大O表示法中是可以省略系数、低阶和常量的，所以最后得到的平均时间复杂度为O(n)</p>
+<p>虽然这样得到的结论是没有任何问题的，但是在计算的过程中还是有一些出入的，因为这n+1种情况出现的概率是不一样的，所以在每一个数计算的时候还需要乘上相对应的概率才可以，具体的运算情况如下</p>
+<blockquote>
+<p>我们知道，要查找的变量 x，要么在数组里，要么就不在数组里。这两种情况对应的概率统计起来很麻烦，为了方便你理解，我们假设在数组中与不在数组中的概率都为 1/2。另外，要查找的数据出现在 0～n-1 这 n 个位置的概率也是一样的，为 1/n。</p>
+<p>所以，根据概率乘法法则，要查找的数据出现在 0～n-1 中任意位置的概率就是 1/(2n)。因此，前面的推导过程中存在的最大问题就是，没有将各种情况发生的概率考虑进去。</p>
+<p>如果我们把每种情况发生的概率也考虑进去，那平均时间复杂度的计算过程就变成了这样：</p>
+<p><img src="/2020/01/20/%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%E5%88%86%E6%9E%90/36c0aabdac69032f8a43368f5e90c67f.jpg" alt></p>
+<p>这个值就是概率论中的加权平均值，也叫作期望值，所以平均时间复杂度的全称应该叫加权平均时间复杂度或者期望时间复杂度。</p>
+<p>引入概率之后，前面那段代码的加权平均值为 (3n+1)/4。用大 O 表示法来表示，去掉系数和常量，这段代码的加权平均时间复杂度仍然是 O(n)。</p>
+</blockquote>
+<p>到这里基本我们常用的时间复杂度就说完了，但是还有一种特殊的平均时间复杂度，那就是<strong>均摊时间复杂度</strong></p>
+<p>均摊时间复杂度就是把耗时多的平均到耗时少的上面，一般都是不会遇到的，而且，在能够应用均摊时间复杂度分析的场合，一般均摊时间复杂度就等于最好情况时间复杂度，所以就不再过多的提它了，因为连平均时间复杂度的应用条件都是极其苛刻的，均摊时间复杂度就更是极少会碰到了，明白最好时间复杂度和最坏时间复杂度就可以了。</p>
+]]></content>
+      <categories>
+        <category>数据结构与算法</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>数据结构与算法初步认识</title>
+    <url>/2020/01/12/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%E5%88%9D%E6%AD%A5%E8%AE%A4%E8%AF%86/</url>
+    <content><![CDATA[<p>什么是数据结构和算法</p>
+<p>数据结构和算法经常是结合在一起的东西，数据结构是数据的存储方式，而算法是对数据的具体操作，他们二者是相辅相成的，数据结构是为算法服务的，算法是要作用在特定的数据结构之上的，两者是不可以孤立存在的。</p>
+<a id="more"></a>
+
+<p>在平时我们所遇到的数据结构和算法有以下一些</p>
+<p><img src="/2020/01/12/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%E5%88%9D%E6%AD%A5%E8%AE%A4%E8%AF%86/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%8F%8A%E7%AE%97%E6%B3%95-scaled.jpg" alt></p>
+<p>整个列表的内容下来还是非常多的，这里不立什么flag，只是为了给之后所学习的内容做一个更好的铺垫。</p>
+<p>数据结构和算法的应用就是为了解决程序的快和省的问题，即运行的够快，占用的空间够少，在评比这两项内容的时候，我们引入了时间复杂度和空间复杂度两个复杂度的概念。虽然说我们可以在写完程序后对程序的时间进行计算和统计等，但那属于事后统计法，有一种事后诸葛亮的感觉，我们需要的是在写程序的时候就对整体的复杂性有一个大概的评估。</p>
+<p>这里我们引入的是大O表示法，T(n)=O(f(n))，其中，T(n) 表示代码执行的时间；n 表示数据规模的大小；f(n) 表示每行代码执行的次数总和。因为这是一个公式，所以用 f(n) 来表示。公式中的 O，表示代码的执行时间 T(n) 与 f(n) 表达式成正比。</p>
+<p>然后我们先来说时间复杂度分析，在进行分析的时候，我们只关注跟规模n有关的内容，其余的内容我们默认它们的时间复杂度为O(1)，比如</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int a&#x3D;1;</span><br><span class="line">int b&#x3D;2;</span><br><span class="line">int c&#x3D;3;</span><br></pre></td></tr></table></figure>
+
+<p>这类型的代码不管在程序有多少，即使是成千上万行，因为它们的数量是固定的，如果在n为无穷大的时候，它们也就可以忽略不计了，所以我们认为它们的时间复杂度为O(1)，在计算的时候就可以忽略掉这部分内容了。</p>
+<p>那如果是一个简单的循环语句的话，它的时间复杂度就为O(n)</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int sum &#x3D; 0;</span><br><span class="line">int i &#x3D; 1;</span><br><span class="line">for (; i &lt;&#x3D; n; ++i) &#123;</span><br><span class="line">sum &#x3D; sum + i;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>因为前面的赋值语句在后面的循环的复杂度面前就可以忽略不计了，所以只需要看循环执行的次数即可。</p>
+<p>如果是多个语句结合在一起的话就需要仔细进行分析</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int cal(int n) &#123;</span><br><span class="line">int sum_1 &#x3D; 0;</span><br><span class="line">int p &#x3D; 1;</span><br><span class="line">for (; p &lt; 100; ++p) &#123;</span><br><span class="line">sum_1 &#x3D; sum_1 + p;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int sum_2 &#x3D; 0;</span><br><span class="line">int q &#x3D; 1;</span><br><span class="line">for (; q &lt; n; ++q) &#123;</span><br><span class="line">sum_2 &#x3D; sum_2 + q;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int sum_3 &#x3D; 0;</span><br><span class="line">int i &#x3D; 1;</span><br><span class="line">int j &#x3D; 1;</span><br><span class="line">for (; i &lt;&#x3D; n; ++i) &#123;</span><br><span class="line">j &#x3D; 1;</span><br><span class="line">for (; j &lt;&#x3D; n; ++j) &#123;</span><br><span class="line">sum_3 &#x3D; sum_3 + i * j;</span><br><span class="line">&#125; </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">return sum_1 + sum_2 + sum_3;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对于这样的代码，我们可以很清楚的分析出来，三段代码的时间复杂度依次是O(1)、O(n)、O(n²)，但因为它们是一个整体的存在，我们选取它们其中最大的一个时间复杂度来作为这段代码所需要的时间复杂度，即O(n²)。</p>
+<p>接着我们再来看一段代码</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int cal(int n) &#123;</span><br><span class="line">int ret &#x3D; 0;</span><br><span class="line">int i &#x3D; 1;</span><br><span class="line">for (; i &lt; n; ++i) &#123;</span><br><span class="line">ret &#x3D; ret + f(i);</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int f(int n) &#123;</span><br><span class="line">int sum &#x3D; 0;</span><br><span class="line">int i &#x3D; 1;</span><br><span class="line">for (; i &lt; n; ++i) &#123;</span><br><span class="line">sum &#x3D; sum + i;</span><br><span class="line">&#125;</span><br><span class="line">return sum;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在这段代码中，我们先看cal函数，如果把f()操作作为一个简单操作，那么它的时间复杂度为O(n)，但是f()操作本身的时间复杂度为O(n)，所以整体的时间复杂度需要将两个相乘，为O(n²)</p>
+<p>紧接着在来一段类似的代码</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">i&#x3D;1;</span><br><span class="line">while (i &lt;&#x3D; n) &#123;</span><br><span class="line">i &#x3D; i * 2;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这段代码看起来跟刚开始说的循环没有太大的却别，但是仔细分辨一下，就会发现不同</p>
+<p>如果将i从1开始循环，每次都会将i的值乘2，最后跳出循环的条件应该为2x=n (2的x次方)，只要我们求出来x的大小也就知道了这个它的时间复杂度，即O(log2n)（log以2为底，n的对数）</p>
+<p>到这里，也就基本能理解时间复杂度的计算方法了</p>
+<p>然后来说一下我们常见的几种时间复杂度</p>
+<p><img src="/2020/01/12/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%E5%88%9D%E6%AD%A5%E8%AE%A4%E8%AF%86/3723793cc5c810e9d5b06bc95325bf0a.jpg" alt></p>
+<p>在这些时间复杂度中，可以粗略的将它们分成两类，多项式量级和非多项式量级，非多项式量级只有图中画波浪线的两种，当数据规模n越来越大时，非多项式量级的执行时间将会急剧增加，就是我们所谓的指数级爆炸式增长，所以它们的算法是非常低效。</p>
+<p>除了上面提到的几种时间复杂度外，还有一种由多个数据规模同时决定的复杂度</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int cal(int m, int n) &#123;</span><br><span class="line">int sum_1 &#x3D; 0;</span><br><span class="line">int i &#x3D; 1;</span><br><span class="line">for (; i &lt; m; ++i) &#123;</span><br><span class="line">sum_1 &#x3D; sum_1 + i;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int sum_2 &#x3D; 0;</span><br><span class="line">int j &#x3D; 1;</span><br><span class="line">for (; j &lt; n; ++j) &#123;</span><br><span class="line">sum_2 &#x3D; sum_2 + j;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">return sum_1 + sum_2;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以很容易的看出，第一个的时间复杂度为O(m)，第二个时间复杂度为O(n)，后面将两个函数的值相加，我们无法轻易的选取其中的一个时间复杂度作为整个模块的时间复杂度，所以它们的时间复杂度为O(m+n)</p>
+<p>到这里时间复杂度也就基本说完了，接着说一下空间复杂度的相关内容</p>
+<p>这里可以通过类比的方式来说空间复杂度，时间复杂度是执行时间和数据规模之间的增长关系，那么空间复杂度就是存储空间和数据规模之间的增长关系，我们常见到的空间复杂度也就只有 O(1)、O(n)、O(n²)三种，像 O(logn)、O(nlogn) 等一般都是用不到的，所以掌握了时间复杂度的计算方法对空间复杂度也就有大致了解了。</p>
+<p><img src="/2020/01/12/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%E5%88%9D%E6%AD%A5%E8%AE%A4%E8%AF%86/497a3f120b7debee07dc0d03984faf04.jpg" class title="test}&lt;&#x2F;p&gt;"></p>]]></content>
+      <categories>
+        <category>数据结构与算法</category>
+      </categories>
+  </entry>
+  <entry>
     <title>公众号历史文章整理</title>
-    <url>/2020/02/19/gongzhonghao_pages/</url>
+    <url>/2020/01/06/gongzhonghao_pages/</url>
     <content><![CDATA[<p>为了方便之后查看，便把之前公众号中写过的自认为还可以的文章都列到这里。</p>
 <a id="more"></a>
 

@@ -48,15 +48,19 @@
   };
 </script>
 
-  <meta name="description" content="为了方便之后查看，便把之前公众号中写过的自认为还可以的文章都列到这里。">
+  <meta name="description" content="在上一篇文章里讲了数组的具体内容，然后自己使用c语言对数组进行了实现。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="公众号历史文章整理">
-<meta property="og:url" content="https://blog.seclibs.com/2020/02/19/gongzhonghao_pages/index.html">
+<meta property="og:title" content="数据结构之数组-c代码实现">
+<meta property="og:url" content="https://blog.seclibs.com/2020/01/22/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%95%B0%E7%BB%84-c%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/index.html">
 <meta property="og:site_name" content="Vesel『无心』&#39;Blog">
-<meta property="og:description" content="为了方便之后查看，便把之前公众号中写过的自认为还可以的文章都列到这里。">
+<meta property="og:description" content="在上一篇文章里讲了数组的具体内容，然后自己使用c语言对数组进行了实现。">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2020-02-19T07:27:06.000Z">
-<meta property="article:modified_time" content="2020-02-19T15:33:21.107Z">
+<meta property="og:image" content="https://blog.seclibs.com/2020/01/22/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%95%B0%E7%BB%84-c%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/carbon-2.png">
+<meta property="og:image" content="https://blog.seclibs.com/2020/01/22/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%95%B0%E7%BB%84-c%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/carbon-1-2.png">
+<meta property="og:image" content="https://blog.seclibs.com/2020/01/22/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%95%B0%E7%BB%84-c%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/carbon-2-1.png">
+<meta property="og:image" content="https://blog.seclibs.com/2020/01/22/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%95%B0%E7%BB%84-c%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/Untitled-1.png">
+<meta property="article:published_time" content="2020-01-22T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-02-19T22:16:02.534Z">
 <meta property="article:author" content="wuxin">
 <meta property="article:tag" content="红队学习">
 <meta property="article:tag" content="红队笔记">
@@ -75,8 +79,9 @@
 <meta property="article:tag" content="无心的梦呓">
 <meta property="article:tag" content="wuxinmengyi">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.seclibs.com/2020/01/22/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%95%B0%E7%BB%84-c%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/carbon-2.png">
 
-<link rel="canonical" href="https://blog.seclibs.com/2020/02/19/gongzhonghao_pages/">
+<link rel="canonical" href="https://blog.seclibs.com/2020/01/22/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%95%B0%E7%BB%84-c%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/">
 
 
 <script id="page-configurations">
@@ -88,7 +93,7 @@
   };
 </script>
 
-  <title>公众号历史文章整理 | Vesel『无心』'Blog</title>
+  <title>数据结构之数组-c代码实现 | Vesel『无心』'Blog</title>
   
 
 
@@ -227,7 +232,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://blog.seclibs.com/2020/02/19/gongzhonghao_pages/">
+    <link itemprop="mainEntityOfPage" href="https://blog.seclibs.com/2020/01/22/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%95%B0%E7%BB%84-c%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -240,7 +245,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          公众号历史文章整理
+          数据结构之数组-c代码实现
         </h1>
 
         <div class="post-meta">
@@ -249,18 +254,30 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2020-02-19 15:27:06 / 修改时间：23:33:21" itemprop="dateCreated datePublished" datetime="2020-02-19T15:27:06+08:00">2020-02-19</time>
+              <time title="创建时间：2020-01-23 00:00:00" itemprop="dateCreated datePublished" datetime="2020-01-23T00:00:00+08:00">2020-01-23</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-02-20 06:16:02" itemprop="dateModified" datetime="2020-02-20T06:16:02+08:00">2020-02-20</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%85%AC%E4%BC%97%E5%8F%B7/" itemprop="url" rel="index">
-                    <span itemprop="name">公众号</span>
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构与算法</span>
+                  </a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/C-C/" itemprop="url" rel="index">
+                    <span itemprop="name">C/C++</span>
                   </a>
                 </span>
             </span>
@@ -276,52 +293,24 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>为了方便之后查看，便把之前公众号中写过的自认为还可以的文章都列到这里。</p>
+        <p>在上一篇文章里讲了数组的具体内容，然后自己使用c语言对数组进行了实现。</p>
 <a id="more"></a>
 
-<p>Linux相关</p>
-<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11689774.html" target="_blank" rel="noopener">Linux目录结构及开机流程详解</a></p>
-<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11704545.html" target="_blank" rel="noopener">Linux重定向及反弹shell详解</a></p>
-<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11717685.html" target="_blank" rel="noopener">Linux文件查找命令详解</a></p>
-<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11746100.html" target="_blank" rel="noopener">Linux权限详解</a></p>
-<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11782709.html" target="_blank" rel="noopener">Linux特殊权限详解</a></p>
-<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11787157.html" target="_blank" rel="noopener">Linux定时任务简述</a></p>
-<p>环境搭建</p>
-<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11591816.html" target="_blank" rel="noopener">基于docker构建测试环境</a></p>
-<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11598181.html" target="_blank" rel="noopener">Windows server 2008 快速搭建域环境</a></p>
-<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11698527.html" target="_blank" rel="noopener">部署IIS+PHP+Oracle环境</a></p>
-<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11648462.html" target="_blank" rel="noopener">部署IIS+PHP+SQL server环境</a></p>
-<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11614963.html" target="_blank" rel="noopener">composer安装依赖时报错的处理办法</a></p>
-<p>web相关</p>
-<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11598721.html" target="_blank" rel="noopener">正则过滤不完整造成的储存xss</a></p>
-<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11601369.html" target="_blank" rel="noopener">挖穿各大SRC的短信轰炸</a></p>
-<p>端口转发</p>
-<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11596538.html" target="_blank" rel="noopener">使用netsh来进行端口转发</a></p>
-<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11598876.html" target="_blank" rel="noopener">lcx端口转发</a></p>
-<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11598941.html" target="_blank" rel="noopener">FPipe端口转发</a></p>
-<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11599131.html" target="_blank" rel="noopener">socat在Windows下的使用</a></p>
-<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11599231.html" target="_blank" rel="noopener">socat在Linux下的使用</a></p>
-<p>内网相关</p>
-<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11599273.html" target="_blank" rel="noopener">Windows认证 | Windows本地认证</a></p>
-<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11599406.html" target="_blank" rel="noopener">Windows认证 | 网络认证</a></p>
-<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11601346.html" target="_blank" rel="noopener">Windows认证 | 域认证</a></p>
-<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11601351.html" target="_blank" rel="noopener">SPN扫描</a></p>
-<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11601357.html" target="_blank" rel="noopener">Kerberoasting攻击</a></p>
-<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11746207.html" target="_blank" rel="noopener">离线破解Navicat密码</a></p>
-<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11768481.html" target="_blank" rel="noopener">域渗透 | 白银票据利用</a></p>
-<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11768517.html" target="_blank" rel="noopener">域渗透 | 白银票据防御</a></p>
-<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11768579.html" target="_blank" rel="noopener">域渗透 | 白银票据利用实例</a></p>
-<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11769233.html" target="_blank" rel="noopener">域渗透 | 黄金票据利用</a></p>
-<p>审计相关</p>
-<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11601375.html" target="_blank" rel="noopener">代码审计之CSRF原理及修复</a></p>
-<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11601385.html" target="_blank" rel="noopener">代码审计之XSS及修复</a></p>
-<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11601378.html" target="_blank" rel="noopener">代码审计之SQL注入及修复</a></p>
-<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11601390.html" target="_blank" rel="noopener">代码审计之越权及越权</a></p>
-<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11601398.html" target="_blank" rel="noopener">代码审计之未授权访问及修复</a></p>
-<p>复现相关</p>
-<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11678655.html" target="_blank" rel="noopener">Linux sudo权限提升漏洞（CVE-2019-14287）</a></p>
-<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11746193.html" target="_blank" rel="noopener">php-fpm在nginx特定环境下的任意代码执行漏洞（CVE-2019-11043）</a></p>
-<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11776007.html" target="_blank" rel="noopener">Apache Solr velocity模板注入RCE漏洞复现</a></p>
+<p>其中定义了一个结构体，定义了长度、已使用长度和地址指针。</p>
+<p><img src="/2020/01/22/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%95%B0%E7%BB%84-c%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/carbon-2.png" alt></p>
+<p>定义alloc函数来分配内存空间</p>
+<p><img src="/2020/01/22/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%95%B0%E7%BB%84-c%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/carbon-1-2.png" alt></p>
+<p>之后便是插入元素的insert函数、打印数组的dump函数、搜索数组的search函数和删除数组的del函数</p>
+<p>所有的操作步骤都是在main函数中提前定义好了，来进行验证前面所实现的函数</p>
+<p>如果需要下载代码，请移步文章最后。</p>
+<p><img src="/2020/01/22/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%95%B0%E7%BB%84-c%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/carbon-2-1.png" alt></p>
+<p>运行结果如下</p>
+<p><img src="/2020/01/22/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%95%B0%E7%BB%84-c%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/Untitled-1.png" alt></p>
+<p>代码：<a href="https://github.com/veselwuxin/code.seclibs.com/blob/master/c/array.c" target="_blank" rel="noopener">GitHub</a></p>
+<hr>
+<p><strong>2020/1/31更新</strong></p>
+<p>文中代码有些许错误，请查看最新代码</p>
+<p>代码：<a href="https://github.com/veselwuxin/code.seclibs.com/blob/master/c/array.c" target="_blank" rel="noopener">GitHub</a></p>
 
     </div>
 
@@ -335,6 +324,16 @@
 
 
         
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/01/21/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%95%B0%E7%BB%84/" rel="prev" title="数据结构之数组">
+      <i class="fa fa-chevron-left"></i> 数据结构之数组
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/01/26/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E9%93%BE%E8%A1%A8/" rel="next" title="数据结构之链表">
+      数据结构之链表 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
       </footer>
     
   </article>
@@ -406,14 +405,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">1</span>
+          <span class="site-state-item-count">10</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-count">3</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
   </nav>
@@ -479,7 +478,7 @@ var _hmt = _hmt || [];
 <!--字数统计-->
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共378字</span>
+  <span class="post-count">博客全站共7.8k字</span>
 </div>
 
         

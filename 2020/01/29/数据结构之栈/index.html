@@ -48,15 +48,16 @@
   };
 </script>
 
-  <meta name="description" content="记录红队相关学习笔记">
-<meta property="og:type" content="website">
-<meta property="og:title" content="sitemap">
-<meta property="og:url" content="https://blog.seclibs.com/sitemap/index.html">
+  <meta name="description" content="前面说完了数组和列表两个常用的数据结构，虽然它们的实现代码还很粗糙，但是不妨碍自己对数据结构的深入理解，接下来就说一说栈(stack)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据结构之栈">
+<meta property="og:url" content="https://blog.seclibs.com/2020/01/29/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%A0%88/index.html">
 <meta property="og:site_name" content="Vesel『无心』&#39;Blog">
-<meta property="og:description" content="记录红队相关学习笔记">
+<meta property="og:description" content="前面说完了数组和列表两个常用的数据结构，虽然它们的实现代码还很粗糙，但是不妨碍自己对数据结构的深入理解，接下来就说一说栈(stack)">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2020-02-19T06:51:51.000Z">
-<meta property="article:modified_time" content="2020-02-19T14:51:51.471Z">
+<meta property="og:image" content="https://blog.seclibs.com/2020/01/29/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%A0%88/b193adf5db4356d8ab35a1d32142b3da-1024x739.jpg">
+<meta property="article:published_time" content="2020-01-29T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-02-19T22:57:03.678Z">
 <meta property="article:author" content="wuxin">
 <meta property="article:tag" content="红队学习">
 <meta property="article:tag" content="红队笔记">
@@ -75,8 +76,9 @@
 <meta property="article:tag" content="无心的梦呓">
 <meta property="article:tag" content="wuxinmengyi">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.seclibs.com/2020/01/29/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%A0%88/b193adf5db4356d8ab35a1d32142b3da-1024x739.jpg">
 
-<link rel="canonical" href="https://blog.seclibs.com/sitemap/">
+<link rel="canonical" href="https://blog.seclibs.com/2020/01/29/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%A0%88/">
 
 
 <script id="page-configurations">
@@ -84,12 +86,11 @@
   CONFIG.page = {
     sidebar: "",
     isHome: false,
-    isPost: false
+    isPost: true
   };
 </script>
 
-  <title>sitemap | Vesel『无心』'Blog
-  </title>
+  <title>数据结构之栈 | Vesel『无心』'Blog</title>
   
 
 
@@ -219,44 +220,120 @@
       <div class="main-inner">
         <div class="content-wrap">
           
-  
-  
 
           <div class="content">
             
 
   <div class="posts-expand">
-    
-    
-    
-    <div class="post-block" lang="zh-CN">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.seclibs.com/2020/01/29/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%A0%88/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="wuxin">
+      <meta itemprop="description" content="记录红队相关学习笔记">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Vesel『无心』'Blog">
+    </span>
       <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          数据结构之栈
+        </h1>
 
-<h1 class="post-title" itemprop="name headline">sitemap
-</h1>
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
 
-<div class="post-meta">
+              <time title="创建时间：2020-01-30 00:00:00" itemprop="dateCreated datePublished" datetime="2020-01-30T00:00:00+08:00">2020-01-30</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-02-20 06:57:03" itemprop="dateModified" datetime="2020-02-20T06:57:03+08:00">2020-02-20</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构与算法</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>前面说完了数组和列表两个常用的数据结构，虽然它们的实现代码还很粗糙，但是不妨碍自己对数据结构的深入理解，接下来就说一说<strong>栈(stack)</strong></p>
+<a id="more"></a>
+
+<p>栈，可以用一个很常见的事物来说明，比如我们放了一摞盘子，如果我们想取走下面的某一个盘子，就必须先将上面的盘子挨个移走才可以，跟小时候玩的汉诺塔益智游戏是一样的结构， 也就是后放上去的先拿出来，先放进去的后拿出来。</p>
+<p>从栈的特性上来看，栈是一种受限制的线性表，它只允许在一端进行插入和删除操作，在功能实现上完全可以用数组和链表来代替，但是栈也有它自己的好处，因为只允许在一端进行插入和删除，它所暴露的操作接口就比数组和链表少很多，也就更加安全，牺牲了灵活性而增加了安全性。</p>
+<p>对于栈来说，需要进行的操作只有两种，入栈和出栈，即在栈顶进行插入和删除操作，它们所涉及到的数据变化是个别数据的操作，而且入栈和出栈也就只有对栈顶元素操作时的几个临时变量，所以它的时间复杂度和空间复杂度均为O(1)。</p>
+<p>在代码实现上，它既可以使用数组来实现，也可以使用链表来实现，用数组实现的栈，我们叫作顺序栈，用链表实现的栈，我们叫作链式栈。</p>
+<p>这里还会涉及到的一个方法就是如何对栈进行<strong>动态扩容</strong>，对于链式栈来说，虽然不存在受固定大小的限制，但是大量的next指针，对内存的消耗也是比较巨大的。</p>
+<p>动态扩容就是在空间不够时，重新创建一块比当前内存空间大的空间，然后将所有的数据都拷贝过去，这样就实现了动态扩容，一般新创建的内存空间的大小都是之前空间大小的0.5倍或1倍。</p>
+<p>大致的过程如下图所示</p>
+<p><img src="/2020/01/29/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%A0%88/b193adf5db4356d8ab35a1d32142b3da-1024x739.jpg" alt></p>
+<p>在对于栈的理解当中，还要注意一点，内存中的栈与数据结构中的栈是完全不同的两个概念，需要特别注意一下</p>
+<blockquote>
+<p>引用自极客时间- 阿杜S考特</p>
+<p>内存中的堆栈和数据结构堆栈不是一个概念，可以说内存中的堆栈是真实存在的物理区，数据结构中的堆栈是抽象的数据存储结构。<br>内存空间在逻辑上分为三部分：代码区、静态数据区和动态数据区，动态数据区又分为栈区和堆区。<br>代码区：存储方法体的二进制代码。高级调度（作业调度）、中级调度（内存调度）、低级调度（进程调度）控制代码区执行代码的切换。<br>静态数据区：存储全局变量、静态变量、常量，常量包括final修饰的常量和String常量。系统自动分配和回收。<br>栈区：存储运行方法的形参、局部变量、返回值。由系统自动分配和回收。<br>堆区：new一个对象的引用或地址存储在栈区，指向该对象存储在堆区中的真实数据。</p>
+</blockquote>
+<p>对于栈的说明就这么多，接下来就是尝试对它进行代码实现。</p>
+<hr>
+<p>参考文档：</p>
+<p>极客时间-数据结构与算法之美</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/01/28/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E5%8F%8C%E5%90%91%E9%93%BE%E8%A1%A8-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/" rel="prev" title="数据结构之双向链表-c语言实现">
+      <i class="fa fa-chevron-left"></i> 数据结构之双向链表-c语言实现
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/01/30/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%A0%88-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/" rel="next" title="数据结构之栈-c语言实现">
+      数据结构之栈-c语言实现 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
   
 
-</div>
-
-</header>
-
-      
-      
-      
-      <div class="post-body">
-          
-      </div>
-      
-      
-      
-    </div>
-    
-
-    
-    
-    
   </div>
 
 

@@ -48,13 +48,18 @@
   };
 </script>
 
-  <meta name="description" content="记录红队相关学习笔记">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Vesel『无心』&#39;Blog">
-<meta property="og:url" content="https://blog.seclibs.com/archives/2020/02/index.html">
+  <meta name="description" content="在说数组之前咱们先明确两个概念，什么是线性表，什么是非线性表">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据结构之数组">
+<meta property="og:url" content="https://blog.seclibs.com/2020/01/21/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%95%B0%E7%BB%84/index.html">
 <meta property="og:site_name" content="Vesel『无心』&#39;Blog">
-<meta property="og:description" content="记录红队相关学习笔记">
+<meta property="og:description" content="在说数组之前咱们先明确两个概念，什么是线性表，什么是非线性表">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.seclibs.com/2020/01/21/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%95%B0%E7%BB%84/b6b71ec46935130dff5c4b62cf273477.jpg">
+<meta property="og:image" content="https://blog.seclibs.com/2020/01/21/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%95%B0%E7%BB%84/6ebf42641b5f98f912d36f6bf86f6569.jpg">
+<meta property="og:image" content="https://blog.seclibs.com/2020/01/21/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%95%B0%E7%BB%84/98df8e702b14096e7ee4a5141260cdc4.jpg">
+<meta property="article:published_time" content="2020-01-21T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-02-19T22:19:09.186Z">
 <meta property="article:author" content="wuxin">
 <meta property="article:tag" content="红队学习">
 <meta property="article:tag" content="红队笔记">
@@ -73,8 +78,9 @@
 <meta property="article:tag" content="无心的梦呓">
 <meta property="article:tag" content="wuxinmengyi">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.seclibs.com/2020/01/21/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%95%B0%E7%BB%84/b6b71ec46935130dff5c4b62cf273477.jpg">
 
-<link rel="canonical" href="https://blog.seclibs.com/archives/2020/02/">
+<link rel="canonical" href="https://blog.seclibs.com/2020/01/21/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%95%B0%E7%BB%84/">
 
 
 <script id="page-configurations">
@@ -82,11 +88,11 @@
   CONFIG.page = {
     sidebar: "",
     isHome: false,
-    isPost: false
+    isPost: true
   };
 </script>
 
-  <title>归档 | Vesel『无心』'Blog</title>
+  <title>数据结构之数组 | Vesel『无心』'Blog</title>
   
 
 
@@ -220,49 +226,125 @@
           <div class="content">
             
 
+  <div class="posts-expand">
+      
   
   
-  
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <span class="collection-header">嗯..! 目前共计 1 篇日志。 继续努力。</span>
-      </div>
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.seclibs.com/2020/01/21/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%95%B0%E7%BB%84/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="wuxin">
+      <meta itemprop="description" content="记录红队相关学习笔记">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Vesel『无心』'Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          数据结构之数组
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-01-22 00:00:00" itemprop="dateCreated datePublished" datetime="2020-01-22T00:00:00+08:00">2020-01-22</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-02-20 06:19:09" itemprop="dateModified" datetime="2020-02-20T06:19:09+08:00">2020-02-20</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构与算法</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <h1 class="collection-header">2020</h1>
+        <p>在说数组之前咱们先明确两个概念，什么是<strong>线性表</strong>，什么是<strong>非线性表</strong></p>
+<a id="more"></a>
+
+<p>顾名思义，线性表就是把数据排成一条，每个数据只有前后两种情况，常见的线性表有<strong>数组、链表、队列、栈</strong>等</p>
+<p><img src="/2020/01/21/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%95%B0%E7%BB%84/b6b71ec46935130dff5c4b62cf273477.jpg" alt></p>
+<p>那非线性表就更好理解了，数据不是按照一条线来排列的，每个数据并不只有前后两个方向，常见的有<strong>二叉树、堆、图</strong>等</p>
+<p><img src="/2020/01/21/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%95%B0%E7%BB%84/6ebf42641b5f98f912d36f6bf86f6569.jpg" alt></p>
+<p>明白了这个概念之后，咱们再来说数组，什么是数组？</p>
+<p>数组不仅是大多数编程语言中的一个数据类型，它更是一个最基础的数据结构。</p>
+<p><strong>数组（Array）是一种线性表数据结构。它用一组连续的内存空间，来存储一组具有相同类型的数据。</strong></p>
+<p>关于线性表前面已经说过了，接下来说具有连续的内存空间、存储相同类型的数据，也正是因为这一点才使数组有了<strong>随机访问</strong>的特性。</p>
+<p>我们拿下面这个例子来进行说明，有一个长度为10的int类型的数组，我们给它分配一块连续内存空间 1000～1039，内存块的首地址为1000</p>
+<p><img src="/2020/01/21/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%95%B0%E7%BB%84/98df8e702b14096e7ee4a5141260cdc4.jpg" alt></p>
+<p>当我们需要访问其中的数据的时候，计算机会先通过一个寻址公式来找到内存地址，然后再读取其中的数据。</p>
+<p>在数组中我们使用的寻址公式为</p>
+<p>[mark]a[i]_address = base_address + i * data_type_size[/mark]</p>
+<p>base_address为内存块的首地址1000，data_type_size为数据类型的大小，这里我们使用的是int类型，所以data_type_size为4个字节，也正是这个原因，在很多语言中，都将数组的第一个下标定为0，因为在寻址的时候，可以直接得到内存地址，而不需要再将数值减一后再进行计算，虽然我们口算很简单，但是在CPU中，它所进行的运算还是相当多的。</p>
+<p>当我们需要得到数组中第一个元素的内容时，便直接套公式1000+0*4=1000，便直接得到了内存地址。</p>
+<p>所以数组适合查询，支持随机访问，在根据下标进行随机访问时时间复杂度为O(1)，这里需要注意一下，说数组的时间复杂度的时候一定要说明在跟进下标进行随机访问的时候，因为如果使用二分查找的话，即便已经进行过排序的数组，时间复杂度也是O(logn)。</p>
+<p>但是数组的随机访问的特性有利有弊，因为数组要保证空间是连续的，所以在增加和删除的时候，就需要进行大量的操作将数据进行移动，将是非常低效的。</p>
+<p>我们先来说<strong>插入操作</strong>，假如数组的长度为x，那么如果要在第y个位置插入一个数据，那么就需要将y到x的所有数据都往后挪一位，将第y个位置腾出来。</p>
+<p>我们来看一下它所涉及到的时间复杂度，如果插入的数据在最后一个，就不需要进行移动，最好时间复杂度为O(1)；如果插入的数据在第一个，则后面的每一个数据都需要往后挪一个，最坏时间复杂度为O(n)；因为在每一个位置插入的概率都是一样的，所以平均时间复杂度为(1+2+…+n)/n=O(n)。</p>
+<p>当然这是对数组数据是有序的情况下来说的，如果数据是无序的话，就不需要这些操作了，如果要在第y位插入数据，只需要将第y位的数据移动到整个数组的最后面，然后再将需要插入的数据插入即可，这个时候的时间复杂度就降为了O(1)。</p>
+<p>接下来说<strong>删除操作</strong>，与插入数据类似，如果要删除第y位的数据，就需要将y到n的数据都往前挪一个，否则内存空间就不连续了，如果删除数组末尾的数据，最好时间复杂度为 O(1)；如果删除开头的数据，最坏时间复杂度为 O(n)，删除每一个数据的概率是相同的，平均时间复杂度为 O(n)。</p>
+<p>数组到这里也就结束了，再接着就是代码实现。</p>
+<hr>
+<p>参考文档</p>
+<p>极客时间-数据结构和算法之美</p>
+
     </div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+    
+    
+    
 
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-02-19T15:27:06+08:00"
-              content="2020-02-19">
-          02-19
-        </time>
-      </div>
+      <footer class="post-footer">
 
-      <h2 class="post-title">
-          <a class="post-title-link" href="/2020/02/19/gongzhonghao_pages/" itemprop="url">
-            <span itemprop="name">公众号历史文章整理</span>
-          </a>
-      </h2>
+        
 
-    </header>
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/01/20/%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%E5%88%86%E6%9E%90/" rel="prev" title="时间复杂度分析">
+      <i class="fa fa-chevron-left"></i> 时间复杂度分析
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/01/22/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%95%B0%E7%BB%84-c%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/" rel="next" title="数据结构之数组-c代码实现">
+      数据结构之数组-c代码实现 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
   </article>
+  
+  
+  
 
-
-    </div>
   </div>
-  
-  
-  
-
-  
-
 
 
           </div>
@@ -326,14 +408,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">1</span>
+          <span class="site-state-item-count">10</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-count">3</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
   </nav>
@@ -399,7 +481,7 @@ var _hmt = _hmt || [];
 <!--字数统计-->
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共378字</span>
+  <span class="post-count">博客全站共7.8k字</span>
 </div>
 
         

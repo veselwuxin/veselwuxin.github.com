@@ -48,15 +48,20 @@
   };
 </script>
 
-  <meta name="description" content="记录红队相关学习笔记">
-<meta property="og:type" content="website">
-<meta property="og:title" content="sitemap">
-<meta property="og:url" content="https://blog.seclibs.com/sitemap/index.html">
+  <meta name="description" content="前面讲了数据结构中最常用、最基础的数组，接下来说一说数据结构中另一个比较基础比较常用的数据结构——链表，相比于数组来说，链表更为复杂一点，在理解和实现上都比较困难。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据结构之链表">
+<meta property="og:url" content="https://blog.seclibs.com/2020/01/26/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E9%93%BE%E8%A1%A8/index.html">
 <meta property="og:site_name" content="Vesel『无心』&#39;Blog">
-<meta property="og:description" content="记录红队相关学习笔记">
+<meta property="og:description" content="前面讲了数据结构中最常用、最基础的数组，接下来说一说数据结构中另一个比较基础比较常用的数据结构——链表，相比于数组来说，链表更为复杂一点，在理解和实现上都比较困难。">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2020-02-19T06:51:51.000Z">
-<meta property="article:modified_time" content="2020-02-19T14:51:51.471Z">
+<meta property="og:image" content="https://blog.seclibs.com/2020/01/26/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E9%93%BE%E8%A1%A8/d5d5bee4be28326ba3c28373808a62cd.jpg">
+<meta property="og:image" content="https://blog.seclibs.com/2020/01/26/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E9%93%BE%E8%A1%A8/b93e7ade9bb927baad1348d9a806ddeb.jpg">
+<meta property="og:image" content="https://blog.seclibs.com/2020/01/26/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E9%93%BE%E8%A1%A8/452e943788bdeea462d364389bd08a17.jpg">
+<meta property="og:image" content="https://blog.seclibs.com/2020/01/26/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E9%93%BE%E8%A1%A8/86cb7dc331ea958b0a108b911f38d155.jpg">
+<meta property="og:image" content="https://blog.seclibs.com/2020/01/26/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E9%93%BE%E8%A1%A8/cbc8ab20276e2f9312030c313a9ef70b.jpg">
+<meta property="article:published_time" content="2020-01-26T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-02-19T22:23:31.866Z">
 <meta property="article:author" content="wuxin">
 <meta property="article:tag" content="红队学习">
 <meta property="article:tag" content="红队笔记">
@@ -75,8 +80,9 @@
 <meta property="article:tag" content="无心的梦呓">
 <meta property="article:tag" content="wuxinmengyi">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.seclibs.com/2020/01/26/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E9%93%BE%E8%A1%A8/d5d5bee4be28326ba3c28373808a62cd.jpg">
 
-<link rel="canonical" href="https://blog.seclibs.com/sitemap/">
+<link rel="canonical" href="https://blog.seclibs.com/2020/01/26/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E9%93%BE%E8%A1%A8/">
 
 
 <script id="page-configurations">
@@ -84,12 +90,11 @@
   CONFIG.page = {
     sidebar: "",
     isHome: false,
-    isPost: false
+    isPost: true
   };
 </script>
 
-  <title>sitemap | Vesel『无心』'Blog
-  </title>
+  <title>数据结构之链表 | Vesel『无心』'Blog</title>
   
 
 
@@ -219,44 +224,124 @@
       <div class="main-inner">
         <div class="content-wrap">
           
-  
-  
 
           <div class="content">
             
 
   <div class="posts-expand">
-    
-    
-    
-    <div class="post-block" lang="zh-CN">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.seclibs.com/2020/01/26/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E9%93%BE%E8%A1%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="wuxin">
+      <meta itemprop="description" content="记录红队相关学习笔记">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Vesel『无心』'Blog">
+    </span>
       <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          数据结构之链表
+        </h1>
 
-<h1 class="post-title" itemprop="name headline">sitemap
-</h1>
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
 
-<div class="post-meta">
+              <time title="创建时间：2020-01-27 00:00:00" itemprop="dateCreated datePublished" datetime="2020-01-27T00:00:00+08:00">2020-01-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-02-20 06:23:31" itemprop="dateModified" datetime="2020-02-20T06:23:31+08:00">2020-02-20</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构与算法</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>前面讲了数据结构中最常用、最基础的数组，接下来说一说数据结构中另一个比较基础比较常用的数据结构——链表，相比于数组来说，链表更为复杂一点，在理解和实现上都比较困难。</p>
+<a id="more"></a>
+
+<p>首先数组必须是一段连续的内存空间来进行存储的，即使剩余的内存碎片整合在一起大于所需要的内存也是不能申请成功的，而链表则不然，它不需要连续的内存空间，而是靠“指针”将不连续的内存空间都连接到一起，如果数组储存一个数据需要一个空间，那单链表就需要两个，注意是单链表，一个用来存数据，一个用来存下一块内存空间的地址，具体表现如下图所示</p>
+<p><img src="/2020/01/26/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E9%93%BE%E8%A1%A8/d5d5bee4be28326ba3c28373808a62cd.jpg" alt></p>
+<p>上面说数组和链表所占空间的大小的时候，专门说了是单链表，因为我们常用的链表形式有单链表、双向链表和循环链表等，单链表是其中最简单、最常见的一个。</p>
+<p>如下图就是单链表的结构图，每一块我们都将它称为一个结点，在需要说明当前结点的后一个结点时，我们常称为当前结点的后继结点，其中date区域是用来存放数据的，next区域是存放指针指向下一块内存空间的，我们将它称为后继指针next。</p>
+<p><img src="/2020/01/26/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E9%93%BE%E8%A1%A8/b93e7ade9bb927baad1348d9a806ddeb.jpg" alt></p>
+<p>在图中可以看出来，第一个和最后一个结点是比较特殊的，第一个结点也叫做头结点，它存储的是整个链表的首地址，也叫做基地址，有了首地址，我们就可以遍历出来整个链表中所有的元素；最后一个结点也叫做尾结点，它是没有后继结点的，所以它的后继指针next存放的是NULL，用来表示链表已经结束了。</p>
+<p>与数组一样，链表也支持查找、插入和删除操作。但是链表进行插入和删除操作是非常的高效的，对于数组来说，它需要有连续的内存空间，所以每次插入和删除都需要大量的数据移动操作，而链表本身就不需要连续的内存空间，所以插入和删除的时候，只需要更改next的指向，就可以完成插入和删除操作了，它所对应的时间复杂度为O(1)。</p>
+<p><img src="/2020/01/26/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E9%93%BE%E8%A1%A8/452e943788bdeea462d364389bd08a17.jpg" alt></p>
+<p>但是有利就有弊，数组因为内存空间连续，所以支持随机访问，知道首地址、数据长度和索引，便可以计算出内存地址，但是在插入和删除的时候就会有大量的数据移动操作；链表恰恰相反，因为内存空间不连续，所以在插入和删除的时候，只需要更改后继指针next就可以了，但是在需要访问指定位置的数据内容时，就需要从头结点开始遍历，一直到所需要查询的结点为止，其时间复杂度为O(n)。</p>
+<p>接下来我们来看循环链表和双向链表。</p>
+<p>循环链表是特殊的单链表，单链表的尾结点是指向空地址NULL的，循环链表的尾节点指向了头结点。</p>
+<p><img src="/2020/01/26/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E9%93%BE%E8%A1%A8/86cb7dc331ea958b0a108b911f38d155.jpg" alt></p>
+<p>与单链表相比，它更适合从尾结点走到头结点，对于一些环形结构的数据，循环链表就更加适合。</p>
+<p>接下来说双向链表，双向链表是更加常用的一个链表结构，与单链表相比，它的date数据区域有前后两个指针，前驱指针prev和后继指针next，那么它储存一个数据所占用的空间就更大了，还是用开头的那个例子，加入数组占一个空间，那单链表就占用两个空间，双向链表就需要占用三个空间。</p>
+<p><img src="/2020/01/26/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E9%93%BE%E8%A1%A8/cbc8ab20276e2f9312030c313a9ef70b.jpg" alt></p>
+<p>虽然它占用了更多的空间，但是它也比前面的两个类型更加的灵活，双向链表在处理查询、插入和删除操作的时候，与单链表类似，但是在一些情况下，它比单链表更加的高效。</p>
+<p>假如，我们要删除指定指针所指向的结点，在这个情况下，我们要删除结点的时候，首先需要知道删除结点的前驱结点，然后将前驱结点的后继指针指向删除结点的后继结点。因为单链表不能直接获取到当前结点的前驱结点，所以需要从头开始遍历，直到某一结点的next指向了删除结点，就表明那一个结点为删除结点的前驱结点，其时间复杂度为O(n)。而对于双向链表来说，便可以直接获取到删除结点的前驱结点，时间复杂度为O(1)。同样在指定结点前插入某个节点，双向链表也一样更加具有优势。</p>
+<p>再假如，如果要查找的链表是一个有序链表，那么使用双向链表便可以非常轻松的使用二分法来进行查找。</p>
+<hr>
+<p>参考文档</p>
+<p>极客时间-数据结构与算法之美</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/01/22/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%95%B0%E7%BB%84-c%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/" rel="prev" title="数据结构之数组-c代码实现">
+      <i class="fa fa-chevron-left"></i> 数据结构之数组-c代码实现
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/01/27/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E5%8D%95%E9%93%BE%E8%A1%A8-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/" rel="next" title="数据结构之单链表-c语言实现">
+      数据结构之单链表-c语言实现 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
   
 
-</div>
-
-</header>
-
-      
-      
-      
-      <div class="post-body">
-          
-      </div>
-      
-      
-      
-    </div>
-    
-
-    
-    
-    
   </div>
 
 
