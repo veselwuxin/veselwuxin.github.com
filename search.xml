@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>公众号历史文章整理</title>
+    <url>/2020/02/19/gongzhonghao_pages/</url>
+    <content><![CDATA[<p>为了方便之后查看，便把之前公众号中写过的自认为还可以的文章都列到这里。</p>
+<a id="more"></a>
+
+<p>Linux相关</p>
+<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11689774.html" target="_blank" rel="noopener">Linux目录结构及开机流程详解</a></p>
+<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11704545.html" target="_blank" rel="noopener">Linux重定向及反弹shell详解</a></p>
+<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11717685.html" target="_blank" rel="noopener">Linux文件查找命令详解</a></p>
+<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11746100.html" target="_blank" rel="noopener">Linux权限详解</a></p>
+<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11782709.html" target="_blank" rel="noopener">Linux特殊权限详解</a></p>
+<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11787157.html" target="_blank" rel="noopener">Linux定时任务简述</a></p>
+<p>环境搭建</p>
+<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11591816.html" target="_blank" rel="noopener">基于docker构建测试环境</a></p>
+<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11598181.html" target="_blank" rel="noopener">Windows server 2008 快速搭建域环境</a></p>
+<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11698527.html" target="_blank" rel="noopener">部署IIS+PHP+Oracle环境</a></p>
+<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11648462.html" target="_blank" rel="noopener">部署IIS+PHP+SQL server环境</a></p>
+<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11614963.html" target="_blank" rel="noopener">composer安装依赖时报错的处理办法</a></p>
+<p>web相关</p>
+<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11598721.html" target="_blank" rel="noopener">正则过滤不完整造成的储存xss</a></p>
+<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11601369.html" target="_blank" rel="noopener">挖穿各大SRC的短信轰炸</a></p>
+<p>端口转发</p>
+<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11596538.html" target="_blank" rel="noopener">使用netsh来进行端口转发</a></p>
+<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11598876.html" target="_blank" rel="noopener">lcx端口转发</a></p>
+<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11598941.html" target="_blank" rel="noopener">FPipe端口转发</a></p>
+<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11599131.html" target="_blank" rel="noopener">socat在Windows下的使用</a></p>
+<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11599231.html" target="_blank" rel="noopener">socat在Linux下的使用</a></p>
+<p>内网相关</p>
+<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11599273.html" target="_blank" rel="noopener">Windows认证 | Windows本地认证</a></p>
+<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11599406.html" target="_blank" rel="noopener">Windows认证 | 网络认证</a></p>
+<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11601346.html" target="_blank" rel="noopener">Windows认证 | 域认证</a></p>
+<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11601351.html" target="_blank" rel="noopener">SPN扫描</a></p>
+<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11601357.html" target="_blank" rel="noopener">Kerberoasting攻击</a></p>
+<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11746207.html" target="_blank" rel="noopener">离线破解Navicat密码</a></p>
+<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11768481.html" target="_blank" rel="noopener">域渗透 | 白银票据利用</a></p>
+<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11768517.html" target="_blank" rel="noopener">域渗透 | 白银票据防御</a></p>
+<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11768579.html" target="_blank" rel="noopener">域渗透 | 白银票据利用实例</a></p>
+<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11769233.html" target="_blank" rel="noopener">域渗透 | 黄金票据利用</a></p>
+<p>审计相关</p>
+<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11601375.html" target="_blank" rel="noopener">代码审计之CSRF原理及修复</a></p>
+<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11601385.html" target="_blank" rel="noopener">代码审计之XSS及修复</a></p>
+<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11601378.html" target="_blank" rel="noopener">代码审计之SQL注入及修复</a></p>
+<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11601390.html" target="_blank" rel="noopener">代码审计之越权及越权</a></p>
+<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11601398.html" target="_blank" rel="noopener">代码审计之未授权访问及修复</a></p>
+<p>复现相关</p>
+<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11678655.html" target="_blank" rel="noopener">Linux sudo权限提升漏洞（CVE-2019-14287）</a></p>
+<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11746193.html" target="_blank" rel="noopener">php-fpm在nginx特定环境下的任意代码执行漏洞（CVE-2019-11043）</a></p>
+<p><a href="https://www.cnblogs.com/wuxinmengyi/p/11776007.html" target="_blank" rel="noopener">Apache Solr velocity模板注入RCE漏洞复现</a></p>
+]]></content>
+      <categories>
+        <category>公众号</category>
+      </categories>
+  </entry>
+</search>
