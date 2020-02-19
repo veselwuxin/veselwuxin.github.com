@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://blog.seclibs.com/categories/index.html</loc>
+    
+    <lastmod>2020-02-19T17:16:55.371Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://blog.seclibs.com/2020/02/19/gongzhonghao_pages/</loc>
     
     <lastmod>2020-02-19T15:33:21.107Z</lastmod>
@@ -12,13 +19,6 @@
     <loc>https://blog.seclibs.com/sitemap/index.html</loc>
     
     <lastmod>2020-02-19T14:51:51.471Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://blog.seclibs.com/categories/index.html</loc>
-    
-    <lastmod>2020-02-19T14:48:04.179Z</lastmod>
     
   </url>
   
