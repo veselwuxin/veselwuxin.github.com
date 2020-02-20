@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.jpg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.jpg">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.seclibs.com').hostname,
+    root: '/',
+    scheme: 'Mist',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="上一篇文章说了一种“功能受限”的顺序表——栈，现在再来说一个 “功能受限”的顺序表 —— 队列（queue）。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据结构之队列">
+<meta property="og:url" content="https://blog.seclibs.com/2020/01/31/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E9%98%9F%E5%88%97/index.html">
+<meta property="og:site_name" content="Vesel『无心』&#39;Blog">
+<meta property="og:description" content="上一篇文章说了一种“功能受限”的顺序表——栈，现在再来说一个 “功能受限”的顺序表 —— 队列（queue）。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.seclibs.com/2020/01/31/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E9%98%9F%E5%88%97/9eca53f9b557b1213c5d94b94e9dce3e.jpg">
+<meta property="og:image" content="https://blog.seclibs.com/2020/01/31/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E9%98%9F%E5%88%97/5c0ec42eb797e8a7d48c9dbe89dc93cb.jpg">
+<meta property="og:image" content="https://blog.seclibs.com/2020/01/31/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E9%98%9F%E5%88%97/dea27f2c505dd8d0b6b86e262d03430d.jpg">
+<meta property="og:image" content="https://blog.seclibs.com/2020/01/31/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E9%98%9F%E5%88%97/58ba37bb4102b87d66dffe7148b0f990.jpg">
+<meta property="og:image" content="https://blog.seclibs.com/2020/01/31/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E9%98%9F%E5%88%97/20200201205753.png">
+<meta property="og:image" content="https://blog.seclibs.com/2020/01/31/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E9%98%9F%E5%88%97/20200201205726.png">
+<meta property="og:image" content="https://blog.seclibs.com/2020/01/31/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E9%98%9F%E5%88%97/5ef3326181907dea0964f612890185eb.jpg">
+<meta property="og:image" content="https://blog.seclibs.com/2020/01/31/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E9%98%9F%E5%88%97/9f539cc0f1edc20e7fa6559193898067.jpg">
+<meta property="article:published_time" content="2020-01-31T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-02-20T04:41:43.595Z">
+<meta property="article:author" content="wuxin">
+<meta property="article:tag" content="红队学习">
+<meta property="article:tag" content="红队笔记">
+<meta property="article:tag" content="RED TEAM">
+<meta property="article:tag" content="信安学习">
+<meta property="article:tag" content="信安笔记">
+<meta property="article:tag" content="内网渗透">
+<meta property="article:tag" content="web安全">
+<meta property="article:tag" content="环境搭建">
+<meta property="article:tag" content="红队开发">
+<meta property="article:tag" content="安全开发">
+<meta property="article:tag" content="网络安全">
+<meta property="article:tag" content="信息安全">
+<meta property="article:tag" content="零基础学习">
+<meta property="article:tag" content="学习笔记">
+<meta property="article:tag" content="无心的梦呓">
+<meta property="article:tag" content="wuxinmengyi">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.seclibs.com/2020/01/31/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E9%98%9F%E5%88%97/9eca53f9b557b1213c5d94b94e9dce3e.jpg">
+
+<link rel="canonical" href="https://blog.seclibs.com/2020/01/31/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E9%98%9F%E5%88%97/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>数据结构之队列 | Vesel『无心』'Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Vesel『无心』'Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.seclibs.com/2020/01/31/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E9%98%9F%E5%88%97/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/favicon.jpg">
+      <meta itemprop="name" content="wuxin">
+      <meta itemprop="description" content="记录红队相关学习笔记">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Vesel『无心』'Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          数据结构之队列
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-02-01 00:00:00" itemprop="dateCreated datePublished" datetime="2020-02-01T00:00:00+08:00">2020-02-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-02-20 12:41:43" itemprop="dateModified" datetime="2020-02-20T12:41:43+08:00">2020-02-20</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构与算法</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>上一篇文章说了一种“功能受限”的顺序表——栈，现在再来说一个 “功能受限”的顺序表 —— <strong>队列</strong>（queue）。</p>
+<a id="more"></a>
+
+<p>队列也是一个常用的数据结构，在大部分资源有限的情况下，当没有空闲资源的时候，基本上都是使用队列这种数据结构来实现请求排队的。</p>
+<p>队列，顾名思义，就是排的一条队，比如在买票的时候排的一条队伍，先来的先买，后来的后买，不允许插队，也就是先进先出的方式，栈是后进先出的方式。</p>
+<p>栈支持入栈（push）和出栈（pop）两种操作，队列也是类似的，支持入队（enqueue）和出队（dequeue）两种操作，入队就是在尾部追加一个数据，出队就是在头部取走一个数据。</p>
+<p><img src="/2020/01/31/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E9%98%9F%E5%88%97/9eca53f9b557b1213c5d94b94e9dce3e.jpg" alt></p>
+<p>队列作为一种非常基础的数据结构，应用是非常广泛的，特别是一些具有某些额外特性的队列，比如循环队列、阻塞队列、并发队列。它们在很多偏底层系统、框架、中间件的开发中，起着关键性的作用。</p>
+<hr>
+<p>队列在实现上跟栈也是类似的，可以使用数组或链表来进行实现，使用数组实现的叫做顺序队列，使用链表实现的叫做链式队列。但是栈只需要一个栈顶指针top就可以了，队列则需要头部head指针和尾部tail指针两个来标识。</p>
+<p>比如说a、b、c、d四个数据入队以后，head指针将指向下标为0的位置，tail指针指向下标为4的位置</p>
+<p><img src="/2020/01/31/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E9%98%9F%E5%88%97/5c0ec42eb797e8a7d48c9dbe89dc93cb.jpg" alt></p>
+<p>当进行两次出队的操作后，head指针将指向下标为2的位置</p>
+<p><img src="/2020/01/31/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E9%98%9F%E5%88%97/dea27f2c505dd8d0b6b86e262d03430d.jpg" alt></p>
+<p>那如果不断的往后走，一直到下标为7后，不能再继续增加了怎么办，那就可以使用数组实现时的数据移动的方式，将数据向前迁移，那如果每进行一次出栈就迁移一次，那不就相当于一直在删除下标为0的元素，然后将整个队列都拷贝一边，操作的时间复杂度就为O(n)了呀，其实完全可以用另一种思路，在每次出栈的时候不进行迁移数据的操作，而是在数据入栈的时候，发现没有位置了，再将所有的数据向前迁移，这样时间复杂度就变成了O(1)，即队列未满时，直接入队，时间复杂度为O(1)，当队列已满时，也就是tail=n时，时间复杂度变为了O(n)，如果将最后一次的n次迁移，平均到前面的n-1次上，那它们的均摊时间复杂度就变为了O(1)。</p>
+<p>上面说的是顺序队列，对于链式队列来说，就更加容易了，因为不会涉及到队满的情况了，只需要处理好指针的移动问题就可以了。</p>
+<p>但是它还有一个比较严重的问题，因为它的长度是可以无限长的，所以当请求的任务特别多时，后面的任务将会等待相当长的时间，这对于对时间比较敏感的系统来说，是会出问题的。</p>
+<p>顺序队列因为大小有限，如果请求的任务超过了队列长度，将会直接将后续的任务拒绝掉，这对于对时间比较敏感的系统来说，是比较合理的方式，但是如何设置队列的大小又是一个问题，队列太大导致等待的请求太多，队列太小会导致无法充分利用系统资源、发挥最大性能。</p>
+<hr>
+<p>前面顺序队列的实现时，当tail=n时，会有大量数据迁移的操作，如果使用循环队列就可以完美的解决这个问题了。</p>
+<p>循环队列，顾名思义，就是将队列的首尾相连，组成环状</p>
+<p><img src="/2020/01/31/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E9%98%9F%E5%88%97/58ba37bb4102b87d66dffe7148b0f990.jpg" alt></p>
+<p>就拿上图来说，这个循环队列n=8，当前head=4，tail=7，当我们再插入一个数据的时候，会插入到下标为7的位置，tail将会向后挪一个，到达了0的位置，再插入数据，依旧像上面说的一样执行，tail将指向了下标为1的地方。</p>
+<p>通过这样的方法，就节省了很多数据迁移的操作，但是在代码实现上就会更加的复杂，其中最关键的地方还是确定好队空和队满的判定条件。</p>
+<p>队列为空的条件仍然是head=tail，那什么情况下是队满呢？</p>
+<p>在一般情况下，很明显的可以看出来，当tail+1=head的时候，即为队满</p>
+<p><img src="/2020/01/31/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E9%98%9F%E5%88%97/20200201205753.png" alt></p>
+<p>但是还有一个情况比较特殊，并不适用这个规则，就是当head=0，tail=7时，此时再插入一个数据的时候，观察图可以发现，此时tail将等于head，但是tail=head的时候，是我们所说的队列为空的时候，这也就是为什么循环队列会浪费一个数组空间的原因；这个情况明显已经属于队满的情况了，如果套用上面的公式，tail+1=8，head=0，并不满足我们前面所提到的常规情况。</p>
+<p><img src="/2020/01/31/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E9%98%9F%E5%88%97/20200201205726.png" alt></p>
+<p>那么如何才能将tail+1在最大的情况下等于0呢，这里可以引入取余的方法。当tail=7时，tail+1=8，将它与n=8取余，8%8=0，就可以满足这个要求了，通用的公式就变成了 <strong>(tail+1)%n=head</strong> ，那一般情况满不满足这个公式呢，因为在一般情况下，tail+1都是小于n的，只有在上面所说的特殊情况时tail+1=n，所以不管怎么取余都是tail+1本身，也就是等于head了，所以队满的条件为 <strong>(tail+1)%n=head</strong> 。</p>
+<p>上面在解释的时候也说了循环队列会浪费一个数组空间的原因，那如果我们专门用一个记录队列大小的值size，当这个值与数组大小相等时，表示队列已满，当tail达到最底时，size不等于数组大小时，tail就指向数组第一个位置。当出队时，size–，入队时size++。</p>
+<p>这种的记录方法跟之前实现栈时候的思路类似，但是这样依旧会新创建一个内存空间来存放size值，最后消耗的大小是一样的。</p>
+<hr>
+<p>到这里基础的队列就说完了，但是这样基础的队列在实际的业务开发中都不大会直接用到，常用的是一些比较特殊的队列，比如阻塞队列和并发队列。</p>
+<p>阻塞队列其实就是在正常的队列操作中加上了阻塞操作，当队列为空时，在对头取数据的时候，会被阻塞，因为队列中还没有任何可以取的数据，直到队列中有数据时，才会取出数据并返回；如果队列已经满了，那插入数据将会被阻塞，直到有空闲位置后，将数据插入才会返回。</p>
+<p>通过阻塞队列，很轻松就可以实现“生产者 – 消费者模型”，它可以有效的协调生产与消费的速度，当生产过快的时候，队列就无法再加入了，生产者就会被阻塞，直到出现空余位置的时候才会继续生产。</p>
+<p><img src="/2020/01/31/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E9%98%9F%E5%88%97/5ef3326181907dea0964f612890185eb.jpg" alt></p>
+<p>那我们设想一个场景，如果消费者方面已经不需要这个东西了，那生产方还是在不断的往进放东西，这样就会造成极大的浪费，这样的情况让我想起了我们现在全面深化改革的一点——供给侧结构性改革，不再让供给方无限的供给了，要在可能快出现问题的时候，便让供给方减少供给，以便让资源得到更好的利用。</p>
+<p>插了点题外话，我们继续说阻塞队列，为了让数据更加高效的处理，我们还可以协调供给者和消费者的的数量。</p>
+<p><img src="/2020/01/31/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E9%98%9F%E5%88%97/9f539cc0f1edc20e7fa6559193898067.jpg" alt></p>
+<p>那并发队列又是什么，并发队列就是在多线程的情况下，由于有多个线程同时操作，可能会存在一些安全问题，为了实现线程安全的队列就是并发队列，与阻塞队列类似，并发队列就是在入队和出队上加锁，同一时刻仅允许一个存或取的操作，但是锁粒度大并发度就会比较低，这个也是一个需要协调的东西。</p>
+<p>实际上，基于数组的循环队列，利用 CAS 原子操作 (Compare &amp; Set，或是 Compare &amp; Swap)，可以实现非常高效的并发队列。这也是循环队列比链式队列应用更加广泛的原因。</p>
+<hr>
+<p>参考文档</p>
+<p>极客时间-数据结构与算法之美</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/01/30/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E5%BE%AA%E7%8E%AF%E9%93%BE%E8%A1%A8-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/" rel="prev" title="数据结构之循环链表-c语言实现">
+      <i class="fa fa-chevron-left"></i> 数据结构之循环链表-c语言实现
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/02/01/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E9%A1%BA%E5%BA%8F%E9%98%9F%E5%88%97%E3%80%81%E9%93%BE%E5%BC%8F%E9%98%9F%E5%88%97%E3%80%81%E5%BE%AA%E7%8E%AF%E9%98%9F%E5%88%97-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/" rel="next" title="数据结构之顺序队列、链式队列、循环队列-c语言实现">
+      数据结构之顺序队列、链式队列、循环队列-c语言实现 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="wuxin"
+      src="/images/favicon.jpg">
+  <p class="site-author-name" itemprop="name">wuxin</p>
+  <div class="site-description" itemprop="description">记录红队相关学习笔记</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">25</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<!--统计代码-->
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!--百度统计-->
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?afb87f9d97811aac3cbf2f35d985b532";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">wuxin</span>
+</div>
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+<!--
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+-->
+  <span class="post-meta-divider">|</span>
+
+<!--
+  <div class="theme-info">主题 – <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.7.1
+  </div>
+-->
+
+<!--字数统计-->
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共24k字</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

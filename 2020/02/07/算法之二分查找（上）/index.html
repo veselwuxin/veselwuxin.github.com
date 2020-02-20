@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.jpg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.jpg">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.seclibs.com').hostname,
+    root: '/',
+    scheme: 'Mist',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="二分查找在平时的生活中也挺常用的，比如说以前玩的猜数游戏，每次都取中间数，然后得知是大了，还是小了，这个例子也就是二分查找。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="算法之二分查找（上）">
+<meta property="og:url" content="https://blog.seclibs.com/2020/02/07/%E7%AE%97%E6%B3%95%E4%B9%8B%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE%EF%BC%88%E4%B8%8A%EF%BC%89/index.html">
+<meta property="og:site_name" content="Vesel『无心』&#39;Blog">
+<meta property="og:description" content="二分查找在平时的生活中也挺常用的，比如说以前玩的猜数游戏，每次都取中间数，然后得知是大了，还是小了，这个例子也就是二分查找。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.seclibs.com/2020/02/07/%E7%AE%97%E6%B3%95%E4%B9%8B%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE%EF%BC%88%E4%B8%8A%EF%BC%89/8bce81259abf0e9a06f115e22586b829.jpg">
+<meta property="article:published_time" content="2020-02-07T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-02-20T05:18:12.711Z">
+<meta property="article:author" content="wuxin">
+<meta property="article:tag" content="红队学习">
+<meta property="article:tag" content="红队笔记">
+<meta property="article:tag" content="RED TEAM">
+<meta property="article:tag" content="信安学习">
+<meta property="article:tag" content="信安笔记">
+<meta property="article:tag" content="内网渗透">
+<meta property="article:tag" content="web安全">
+<meta property="article:tag" content="环境搭建">
+<meta property="article:tag" content="红队开发">
+<meta property="article:tag" content="安全开发">
+<meta property="article:tag" content="网络安全">
+<meta property="article:tag" content="信息安全">
+<meta property="article:tag" content="零基础学习">
+<meta property="article:tag" content="学习笔记">
+<meta property="article:tag" content="无心的梦呓">
+<meta property="article:tag" content="wuxinmengyi">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.seclibs.com/2020/02/07/%E7%AE%97%E6%B3%95%E4%B9%8B%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE%EF%BC%88%E4%B8%8A%EF%BC%89/8bce81259abf0e9a06f115e22586b829.jpg">
+
+<link rel="canonical" href="https://blog.seclibs.com/2020/02/07/%E7%AE%97%E6%B3%95%E4%B9%8B%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE%EF%BC%88%E4%B8%8A%EF%BC%89/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>算法之二分查找（上） | Vesel『无心』'Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Vesel『无心』'Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.seclibs.com/2020/02/07/%E7%AE%97%E6%B3%95%E4%B9%8B%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE%EF%BC%88%E4%B8%8A%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/favicon.jpg">
+      <meta itemprop="name" content="wuxin">
+      <meta itemprop="description" content="记录红队相关学习笔记">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Vesel『无心』'Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          算法之二分查找（上）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-02-08 00:00:00" itemprop="dateCreated datePublished" datetime="2020-02-08T00:00:00+08:00">2020-02-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-02-20 13:18:12" itemprop="dateModified" datetime="2020-02-20T13:18:12+08:00">2020-02-20</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构与算法</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>二分查找在平时的生活中也挺常用的，比如说以前玩的猜数游戏，每次都取中间数，然后得知是大了，还是小了，这个例子也就是二分查找。</p>
+<a id="more"></a>
+
+<p>比如下面的这个例子，要查找有没有数值19，其中low和high是查找的区间的下标，mid是查找区域的中间值的下标。</p>
+<p><img src="/2020/02/07/%E7%AE%97%E6%B3%95%E4%B9%8B%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE%EF%BC%88%E4%B8%8A%EF%BC%89/8bce81259abf0e9a06f115e22586b829.jpg" alt></p>
+<p>二分查找的思想是比较容易理解的，而且它的时间复杂度也是比较低的。假设数据大小为n，每次查找完后都会缩小一半，即为除以2，最坏的情况也就是一直到查找空间为空的时候，所以它们的变化为n，n/2，n/4，n/8，…，n/2k，当n/2k=1时，k即为缩小的次数，因为每次都只涉及到两个数的大小比较，所以k次操作的时间复杂度为O(k)，又因为n/2k=1，所以k=log2n，时间复杂度也就是O(logn)，这是一个非常恐怖的数量级了，比如n为2的32次方，大约是四十多亿，用二分查找来查找里面的一个数的话，最多比较32次也就可以得到这个值了，这是一个非常恐怖的情况。</p>
+<p>上面的原理已经很明确了，所以二分查找的实现并不是很复杂，但是有一个前提条件，有序数组中不存在重复元素，只有在这个情况下，二分查找的实现才是相对简单的，具体的实现在下一篇文章里提及。</p>
+<hr>
+<p>虽然二分查找时间复杂度低，查找起来非常高效，但它也有一定的适用条件的。</p>
+<p>首先，二分查找是依赖于数组的，如果使用其他的数据结构来实现的话，二分查找的时间复杂度将会变的非常高，因为数组在下标随机访问的时候，时间复杂度是O(1)，而链表随机访问的时间复杂度是O(n)。</p>
+<p>而且它必须是有序的，前面也说过排序算法，时间复杂度最低的为O(nlogn)，如果使用的场景是没有大量的插入和删除操作，一次排序可以多次查找的情况，那排序所的成本就可以被均摊，否则二分查找将不再适用，动态数据集合的查找，我们需要使用其他的算法才可以。</p>
+<p>最后就是要注意要查找的数据量不能太大或者太小，太小的话，遍历就足以满足；太大的话，因为它是基于数组这种数据结构的，它所需要的连续的内存空间就是一个非常大的障碍。</p>
+<hr>
+<p>参考文档</p>
+<p>极客时间-数据结构与算法之美</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/02/07/%E7%AE%97%E6%B3%95%E4%B9%8B%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE%EF%BC%88%E4%B8%8A%EF%BC%89-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/" rel="prev" title="算法之二分查找（上）-c语言实现">
+      <i class="fa fa-chevron-left"></i> 算法之二分查找（上）-c语言实现
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/02/14/%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8%E5%A0%86%E6%A0%88%E5%9B%BE-c%E8%AF%AD%E8%A8%80/" rel="next" title="函数调用堆栈图-c语言">
+      函数调用堆栈图-c语言 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="wuxin"
+      src="/images/favicon.jpg">
+  <p class="site-author-name" itemprop="name">wuxin</p>
+  <div class="site-description" itemprop="description">记录红队相关学习笔记</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">25</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<!--统计代码-->
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!--百度统计-->
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?afb87f9d97811aac3cbf2f35d985b532";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">wuxin</span>
+</div>
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+<!--
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+-->
+  <span class="post-meta-divider">|</span>
+
+<!--
+  <div class="theme-info">主题 – <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.7.1
+  </div>
+-->
+
+<!--字数统计-->
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共24k字</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

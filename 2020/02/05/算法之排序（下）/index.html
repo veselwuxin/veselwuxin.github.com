@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.jpg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.jpg">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.seclibs.com').hostname,
+    root: '/',
+    scheme: 'Mist',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="前面两篇文章说了时间复杂度为O(n2)的冒泡排序、插入排序和选择排序">
+<meta property="og:type" content="article">
+<meta property="og:title" content="算法之排序（下）">
+<meta property="og:url" content="https://blog.seclibs.com/2020/02/05/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%8B%EF%BC%89/index.html">
+<meta property="og:site_name" content="Vesel『无心』&#39;Blog">
+<meta property="og:description" content="前面两篇文章说了时间复杂度为O(n2)的冒泡排序、插入排序和选择排序">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.seclibs.com/2020/02/05/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%8B%EF%BC%89/987564607b864255f81686829503abae.jpg">
+<meta property="og:image" content="https://blog.seclibs.com/2020/02/05/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%8B%EF%BC%89/df0cdbb73bd19a2d69a52c54d8b9fc0c.jpg">
+<meta property="og:image" content="https://blog.seclibs.com/2020/02/05/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%8B%EF%BC%89/1381c1f3f7819ae61ab17455ed7f0b59.jpg">
+<meta property="article:published_time" content="2020-02-05T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-02-20T05:35:25.319Z">
+<meta property="article:author" content="wuxin">
+<meta property="article:tag" content="红队学习">
+<meta property="article:tag" content="红队笔记">
+<meta property="article:tag" content="RED TEAM">
+<meta property="article:tag" content="信安学习">
+<meta property="article:tag" content="信安笔记">
+<meta property="article:tag" content="内网渗透">
+<meta property="article:tag" content="web安全">
+<meta property="article:tag" content="环境搭建">
+<meta property="article:tag" content="红队开发">
+<meta property="article:tag" content="安全开发">
+<meta property="article:tag" content="网络安全">
+<meta property="article:tag" content="信息安全">
+<meta property="article:tag" content="零基础学习">
+<meta property="article:tag" content="学习笔记">
+<meta property="article:tag" content="无心的梦呓">
+<meta property="article:tag" content="wuxinmengyi">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.seclibs.com/2020/02/05/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%8B%EF%BC%89/987564607b864255f81686829503abae.jpg">
+
+<link rel="canonical" href="https://blog.seclibs.com/2020/02/05/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%8B%EF%BC%89/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>算法之排序（下） | Vesel『无心』'Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Vesel『无心』'Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.seclibs.com/2020/02/05/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%8B%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/favicon.jpg">
+      <meta itemprop="name" content="wuxin">
+      <meta itemprop="description" content="记录红队相关学习笔记">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Vesel『无心』'Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          算法之排序（下）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-02-06 00:00:00" itemprop="dateCreated datePublished" datetime="2020-02-06T00:00:00+08:00">2020-02-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-02-20 13:35:25" itemprop="dateModified" datetime="2020-02-20T13:35:25+08:00">2020-02-20</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构与算法</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>前面两篇文章说了时间复杂度为O(n<sup>2</sup>)的冒泡排序、插入排序和选择排序</p>
+<a id="more"></a>
+
+<p>前面两篇文章说了时间复杂度为O(n<sup>2</sup>)的冒泡排序、插入排序和选择排序；也说了时间复杂度为O(nlogn)的归并排序和快速排序；这次来说一下时间复杂度为O(n)的桶排序、计数排序和基数排序，由于它们的时间复杂度是线性的，所以它们也叫做线性排序（Linear sort），之所以能够做到线性复杂度，是因为它们在排序的时候，不涉及元素之间的比较，同时它们的使用条件也是非常苛刻的。</p>
+<p>桶排序（Bucket sort）</p>
+<p>桶排序，顾名思义，用桶来对数据进行分割，桶排序是将要排序的数组分到几个有序的桶里面，然后对每个桶里面的数据进行排序，最后将所有数据依次取出，就完成了排序。</p>
+<p><img src="/2020/02/05/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%8B%EF%BC%89/987564607b864255f81686829503abae.jpg" alt></p>
+<p>来看一下它的时间复杂度，假如将n个数据 <strong>平均</strong> 分到m个桶中，每一个桶中有x=n/m个数据，每个桶使用快速排序，时间复杂度为O(xlogx)，m个桶的时间复杂度就是O(m*xlogx)，因为x=n/m，所以时间复杂度为O(nlog(n/m))，当桶的个数接近数据n时， log(n/m) 将会是一个非常小的数，时间复杂度就接近与O(n)了。</p>
+<p>但是，上面用了假如两个字，因为要使用桶排序所需要的前提条件比较多，首先数据需要很容易就可以划分到m个桶中，而且每一个桶它本身就需要有先后顺序，这样桶就不需要再进行排序了。其次，我们上面把均匀两个字给加粗了，只有在桶中的数据比较平均时才可以，如果每一个桶中的数据差距是非常大的，那桶内排序的时间复杂度就不是常量级了，最极端的情况就是分到了一个桶中，那时间复杂度就变成了O(nlogn)了。</p>
+<p>桶排序比较适合用在外部排序中。所谓的外部排序就是数据存储在外部磁盘中，数据量比较大，内存有限，无法将数据全部加载到内存中。</p>
+<p>假如有10个G的订单数据，订单金额都是正整数，要根据金额大小进行排序，而内存又比较小，无法同时装下所有的数据该怎么办？</p>
+<p>用桶排序的思路就是，先扫描一遍订单，看一下大概的金额分布，假如金额都分布在1到1万，我们就可以将金额分到10个桶里，第一个桶是1~1000，依此类推，它们的顺序依次是0，1，2…9。</p>
+<p>理想情况下，就是它们均匀分布在每一个桶中，然后我们在每一个桶中使用快速排序，最后将它们依次输出出来。那如果1000-2000的金额比较多的话，还是无法直接放到内存中，那就继续使用桶排序进行分割，直到全部排序完成。</p>
+<hr>
+<p>计数排序（Counting sort）</p>
+<p>计数排序基本上属于桶排序的特殊情况，在要排序的范围不大的时候，比如有x个数据，那我们就分x个桶，每个桶内的数据都是相同的，这样我们就省下了桶内排序的时间。</p>
+<p>至于为什么要叫计数，这个是跟计数排序的实现方法有关的，不过我还没有理解清楚，这里就先放下了，这个坑之后再填。</p>
+<hr>
+<p>基数排序（Radix sort）</p>
+<p>再来一个排序问题来看，如果有十万个手机号码，要将这十万个手机号从小到大排序。如果使用前面的桶排序和计数排序，它的范围比较大，这两种算法明显都不适合。</p>
+<p>现在就可以用到第三个排序方法，基数排序。在刚刚的问题里，我们可以明显的看出来，当一个号码前面的几位已经明显大于另一个号码，那后面的也就不需要比较了，也就是说我们需要将手机号排序为第一个数字从小到大排序，第一个数字相同的，按照第二个数字从小到大排序，第二个数字相同的，按照第三个，依此类推，那如何才能排列成这样呢。</p>
+<p>这里我们用一个新的思路来考虑，我们先按照最后一位数字的大小来进行排序，然后再按照倒数第二位进行排序，依此类推，经过11次排序以后，就完成了对整个手机号的排序。这里需要注意一下的是，必须用稳定的排序算法来实现，如果是非稳定的排序算法，之前的排序就没有任何的意义了。</p>
+<p>用几个字符串表示的话，就是这个样子的</p>
+<p><img src="/2020/02/05/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%8B%EF%BC%89/df0cdbb73bd19a2d69a52c54d8b9fc0c.jpg" alt></p>
+<p>再举一个订单的例子，对于一批订单，我们希望将它按照金额的大小排序，如果金额相同，就按照下单的时间进行排序，一样是使用这样的方法。</p>
+<p><img src="/2020/02/05/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%8B%EF%BC%89/1381c1f3f7819ae61ab17455ed7f0b59.jpg" alt></p>
+<p>那如果我们需要排序的数据并不是等长的，又该如何去处理，比如说要对单词进行排序，有的单词是五个字母，有的单词是十五个字母，那该如何处理？</p>
+<p>我们可以把所有的字母都补到一样的长度，不足的后面补0，因为根据ASCII码我们可以发现，所有的字母都在数字0之后，它并不会影响排序的正常进行，所以依旧可以使用基数排序来进行。</p>
+<hr>
+<p>参考文档</p>
+<p>极客时间-数据结构与算法之美</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/02/04/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%AD%EF%BC%89/" rel="prev" title="算法之排序（中）">
+      <i class="fa fa-chevron-left"></i> 算法之排序（中）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/02/06/Nginx%E5%AD%A6%E4%B9%A0-%E6%9E%B6%E6%9E%84/" rel="next" title="Nginx学习-架构">
+      Nginx学习-架构 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="wuxin"
+      src="/images/favicon.jpg">
+  <p class="site-author-name" itemprop="name">wuxin</p>
+  <div class="site-description" itemprop="description">记录红队相关学习笔记</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">25</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<!--统计代码-->
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!--百度统计-->
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?afb87f9d97811aac3cbf2f35d985b532";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">wuxin</span>
+</div>
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+<!--
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+-->
+  <span class="post-meta-divider">|</span>
+
+<!--
+  <div class="theme-info">主题 – <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.7.1
+  </div>
+-->
+
+<!--字数统计-->
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共24k字</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

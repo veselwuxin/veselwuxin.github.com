@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.jpg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.jpg">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.seclibs.com').hostname,
+    root: '/',
+    scheme: 'Mist',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="排序算法有很多种，甚至有很多都完全没有听过，我们最常见，也最经典的就是：冒泡排序、插入排序、选择排序、归并排序、快速排序、计数排序、基数排序、桶排序。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="算法之排序（上）">
+<meta property="og:url" content="https://blog.seclibs.com/2020/02/03/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%8A%EF%BC%89/index.html">
+<meta property="og:site_name" content="Vesel『无心』&#39;Blog">
+<meta property="og:description" content="排序算法有很多种，甚至有很多都完全没有听过，我们最常见，也最经典的就是：冒泡排序、插入排序、选择排序、归并排序、快速排序、计数排序、基数排序、桶排序。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.seclibs.com/2020/02/03/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%8A%EF%BC%89/4038f64f47975ab9f519e4f739e464e9.jpg">
+<meta property="og:image" content="https://blog.seclibs.com/2020/02/03/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%8A%EF%BC%89/9246f12cca22e5d872cbfce302ef4d09.jpg">
+<meta property="og:image" content="https://blog.seclibs.com/2020/02/03/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%8A%EF%BC%89/b60f61ec487358ac037bf2b6974d2de1.jpg">
+<meta property="og:image" content="https://blog.seclibs.com/2020/02/03/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%8A%EF%BC%89/fd6582d5e5927173ee35d7cc74d9c401.jpg">
+<meta property="og:image" content="https://blog.seclibs.com/2020/02/03/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%8A%EF%BC%89/32371475a0b08f0db9861d102474181d.jpg">
+<meta property="article:published_time" content="2020-02-03T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-02-20T04:57:58.655Z">
+<meta property="article:author" content="wuxin">
+<meta property="article:tag" content="红队学习">
+<meta property="article:tag" content="红队笔记">
+<meta property="article:tag" content="RED TEAM">
+<meta property="article:tag" content="信安学习">
+<meta property="article:tag" content="信安笔记">
+<meta property="article:tag" content="内网渗透">
+<meta property="article:tag" content="web安全">
+<meta property="article:tag" content="环境搭建">
+<meta property="article:tag" content="红队开发">
+<meta property="article:tag" content="安全开发">
+<meta property="article:tag" content="网络安全">
+<meta property="article:tag" content="信息安全">
+<meta property="article:tag" content="零基础学习">
+<meta property="article:tag" content="学习笔记">
+<meta property="article:tag" content="无心的梦呓">
+<meta property="article:tag" content="wuxinmengyi">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.seclibs.com/2020/02/03/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%8A%EF%BC%89/4038f64f47975ab9f519e4f739e464e9.jpg">
+
+<link rel="canonical" href="https://blog.seclibs.com/2020/02/03/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%8A%EF%BC%89/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>算法之排序（上） | Vesel『无心』'Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Vesel『无心』'Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.seclibs.com/2020/02/03/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%8A%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/favicon.jpg">
+      <meta itemprop="name" content="wuxin">
+      <meta itemprop="description" content="记录红队相关学习笔记">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Vesel『无心』'Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          算法之排序（上）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-02-04 00:00:00" itemprop="dateCreated datePublished" datetime="2020-02-04T00:00:00+08:00">2020-02-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-02-20 12:57:58" itemprop="dateModified" datetime="2020-02-20T12:57:58+08:00">2020-02-20</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构与算法</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>排序算法有很多种，甚至有很多都完全没有听过，我们最常见，也最经典的就是：冒泡排序、插入排序、选择排序、归并排序、快速排序、计数排序、基数排序、桶排序。</p>
+<a id="more"></a>
+
+<p>按照时间复杂度来进行划分可以将其划分为三类</p>
+<ul>
+<li>O(n2) ：冒泡、插入、选择；基于比较</li>
+<li>O(nlogn)：快排、归并；基于比较</li>
+<li>O(n)：桶、计数、基数；不基于比较</li>
+</ul>
+<p>这次我们来说时间复杂度为O(n2)的</p>
+<p>在说具体的排序方法之前，先明确排序算法的评价标准</p>
+<p>首先是排序算法的执行效率，执行效率一般从最好、最坏、平均时间复杂度上分析，其分析时间复杂度时需要考虑系数、常数和低阶，因为时间复杂度是在数据规模特别大的时候的增长趋势，在平时的代码中，数量级都是比较小的，所以还需要考虑这些问题。在基于比较的排序算法中，数值比较的次数和数据的移动次数也都是需要考虑进去的。</p>
+<p>其次是内存的消耗，算法的内存消耗可以用空间复杂度来表示，当空间复杂度为O(1)的算法也可以称之为原地排序算法。</p>
+<p>最后是算法的稳定性，当一组数据中有两个相同的值时，排序之后两个值的顺序是如果没有交换那它就是具有稳定性的算法。</p>
+<p>然后我们再引入两个概念， <strong>有序度</strong> 和 <strong>逆序度</strong></p>
+<p><strong>有序度</strong> 是数组中具有有序关系的元素对的个数。</p>
+<p>比如说2、4、3、1、5、6这组数组的有序度是11，因为它有11个有序元素对，分别是(2,4)、(2,3)、(2,5) (2,6)、(4,5)、(4,6)、(3,5)、(3,6)、(1,5)、(1,6)、(5,6)。</p>
+<p>对于6、5、4、3、2、1这组数据，它的有序度是0；对于1、2、3、4、5、6这组数据来说，它的有序度是n*(n-1)/2，这种完全有序的数组的有序度叫做满有序度。</p>
+<p>所以逆序度也就等于 <strong>满有序度-有序度</strong> ，排序的过程就是增加有序度，减少逆序度的过程，最后到达满有序度，排序就结束了。</p>
+<hr>
+<p><strong>冒泡排序</strong> 是依次对两个相邻的值进行比较，如果满足要求的大小关系，就继续往后看，如果不满足就将它们两个互换位置。 每一次冒泡都最起码会交换一个值 ，所以最多执行n次就可以完成排序操作。</p>
+<p>如果一组数据为4、5、6、3、2、1，要求其从小到大排序，那它进行第一次冒泡排序的过程就是这样的</p>
+<p><img src="/2020/02/03/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%8A%EF%BC%89/4038f64f47975ab9f519e4f739e464e9.jpg" alt></p>
+<p>这个时候，最大的数字6，就已经排在了正确的位置上，后续的冒泡操作依次是这样的</p>
+<p><img src="/2020/02/03/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%8A%EF%BC%89/9246f12cca22e5d872cbfce302ef4d09.jpg" alt></p>
+<p>这种情况是刚好用了n次，如果代码直接写成循环n次的话，就可能会有多余的判断流程，如果排列顺序刚好为1、2、3、4、6、5的话，就只需要一次就可以完成排序操作，所以我们可以将每次有无数据交换的操作来作为有无完成排序的条件。</p>
+<p>首先冒泡排序只交换相邻两个数据，所以空间复杂度为O(1)，是原地排序算法。</p>
+<p>在冒泡排序中，我们可以规定它在两个数值相等的时候不进行交换，就可以保证排序前后相同的数值先后顺序不变，所以它是一个稳定的排序算法。</p>
+<hr>
+<p>在数组中，我们在中间插入一个数据的时候，是把相应位置的数据都往后挪一位，同时还可以保证顺序不变，同样的方法放到算法中，就有了 <strong>插入排序</strong> 。</p>
+<p>首先是将数据分为两个区间，<strong>已排序区间</strong> 和 <strong>未排序区间</strong> ，开始的时候，已排序区间只有一个元素，然后在未排序区间中取一个元素，在已排序区间中寻找对应的位置将其插入，不断重复直到未排序区间的数据为空。</p>
+<p>比如要将4、5、6、1、3、2这组数据进行排序，那过程就是这样的</p>
+<p><img src="/2020/02/03/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%8A%EF%BC%89/b60f61ec487358ac037bf2b6974d2de1.jpg" alt></p>
+<p>插入排序与冒泡排序一样，有比较和移动两个操作，循环比较得到要插入的位置，然后将后面的元素往后挪一位。</p>
+<p>对于不同的查找插入点方法，不管是从头到尾，还是从尾到头，元素的比较次数是有区别的。但对于一个给定的初始序列，移动操作的次数总是固定的，就等于逆序度。</p>
+<p>还是拿刚刚的例子说，满有序度是n*(n-1)/2=15，初始序列的有序度是5，所以逆序度是10。</p>
+<p><img src="/2020/02/03/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%8A%EF%BC%89/fd6582d5e5927173ee35d7cc74d9c401.jpg" alt></p>
+<p>在插入排序的时候，我们并不需要额外的空间，所以空间复杂度是O(1)，所以它是一个原地排序算法。</p>
+<p>因为在插入的时候，我们可以让未排序区间的元素排在已排序区间中相同元素的后面，所以它也是一个稳定的排序算法。</p>
+<hr>
+<p><strong>选择排序</strong> 和插入排序比较类似，也有已排序区间和未排序区间，但是初始的时候是不对其进行区分的，选择排序每次都会在未排序区间中选择最小的一个数，将它放到已排序区间的末尾，如果没有已排序区间就将其放到未排序区间的前面。</p>
+<p><img src="/2020/02/03/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%8A%EF%BC%89/32371475a0b08f0db9861d102474181d.jpg" alt></p>
+<p>首先选择排序也不需要申请多余的内存空间，空间复杂度为O(1)，是原地排序算法。</p>
+<p>由于它将数值与前面的数值进行交换，这样将会破坏它的稳定性，所以它是一个不稳定的排序算法。</p>
+<hr>
+<p>相比之下，选择排序比冒泡排序和插入排序稍微逊色一点，拿冒泡排序和插入排序相比呢，从代码上看的话，冒泡排序进行数据交换是需要有第三个变量来做交换的，有三个赋值语句，而插入排序只需要一个赋值语句即可完成赋值操作，所以插入排序比冒泡排序性能更好一点。</p>
+<hr>
+<p>参考文档</p>
+<p>极客时间-数据结构与算法之美</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/02/03/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%8A%EF%BC%89-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/" rel="prev" title="算法之排序（上）-c语言实现">
+      <i class="fa fa-chevron-left"></i> 算法之排序（上）-c语言实现
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/02/04/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%AD%EF%BC%89-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/" rel="next" title="算法之排序（中）-c语言实现">
+      算法之排序（中）-c语言实现 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="wuxin"
+      src="/images/favicon.jpg">
+  <p class="site-author-name" itemprop="name">wuxin</p>
+  <div class="site-description" itemprop="description">记录红队相关学习笔记</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">25</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<!--统计代码-->
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!--百度统计-->
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?afb87f9d97811aac3cbf2f35d985b532";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">wuxin</span>
+</div>
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+<!--
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+-->
+  <span class="post-meta-divider">|</span>
+
+<!--
+  <div class="theme-info">主题 – <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.7.1
+  </div>
+-->
+
+<!--字数统计-->
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共24k字</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
