@@ -1,6 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>进制的本质</title>
+    <url>/2020/02/25/%E8%BF%9B%E5%88%B6%E7%9A%84%E6%9C%AC%E8%B4%A8/</url>
+    <content><![CDATA[<p>什么是进制，进制的本质又是什么，为什么在计算的时候都会把十进制作为中间转换，其实这样的思维完全是错误的，进制的本质并不是我们熟悉的十进制。</p>
+<a id="more"></a>
+
+<h1 id="进制的本质"><a href="#进制的本质" class="headerlink" title="进制的本质"></a>进制的本质</h1><p>进制的本质就是查表，与各种的转换没有任何关系，并不是说计算八进制，就把它转为十进制计算后再转回八进制，这种思想本来就是错误的，<strong>进制的本质就是写表和查表</strong>，我们之所以对十进制的特别熟悉，就是因为我们把十进制相关的表记住了，并不是因为十进制就是进制的基础。</p>
+<h1 id="正常的三进制的表示"><a href="#正常的三进制的表示" class="headerlink" title="正常的三进制的表示"></a>正常的三进制的表示</h1><p>这里用三进制的形式来表示是为了方便说明问题，在正常的三进制中有三个元素0、1、2，它们所表示出来的数是这个样子的。</p>
+<p><img src="/2020/02/25/%E8%BF%9B%E5%88%B6%E7%9A%84%E6%9C%AC%E8%B4%A8/1.png" alt></p>
+<p>其中的每一个数是怎么写出来的，其实都是根据最前面的0、1、2三个数查出来的，后面的所有数都是由前面的数查出来的。</p>
+<p>首先先写出0、1、2，再往后的话就需要进位，一位已经满足不了我们现在的需求了，所以需要两位来进行表示，如何从一位表示跨度到两位表示，这里提供一个方法：在一位的0、1、2前面补一个0，在两位看来，一位的表示其实就是第一位为0，这样写出来的时候，会比较方便观察和理解。</p>
+<p><img src="/2020/02/25/%E8%BF%9B%E5%88%B6%E7%9A%84%E6%9C%AC%E8%B4%A8/2.png" alt></p>
+<p>看图，当前数字为02，需要往后走一位，按照前面0、1、2的顺序来看，接下来，2应该往后走一位，但是后面没有数字了，就需要返回开始的数字重新来一遍，此时应该把这一轮结束的标志记录到前面，也就是我们所说的进位，所以0应该变为1，2应该变为0，所以接下来的数字应该为10。</p>
+<p><img src="/2020/02/25/%E8%BF%9B%E5%88%B6%E7%9A%84%E6%9C%AC%E8%B4%A8/3.png" alt></p>
+<p>接下来，继续往后加一，也就是再往后挪一个，0往后走一步就变成了1，所以接下来是11，再往后是12。</p>
+<p><img src="/2020/02/25/%E8%BF%9B%E5%88%B6%E7%9A%84%E6%9C%AC%E8%B4%A8/4.png" alt></p>
+<p>接下来又到了所谓进位的时候，2往后走一步，发现又需要重新回到开头，开始新的一轮，所以2变成了0，而前面记录的又需要再加一个，1往后走一步，就变成了2，所以接下来的数就变成了20。</p>
+<p><img src="/2020/02/25/%E8%BF%9B%E5%88%B6%E7%9A%84%E6%9C%AC%E8%B4%A8/5.png" alt></p>
+<p>再往后就依次类推，最后就得到了文章开头所得到的三进制的表格。</p>
+<h1 id="正常的三进制的运算"><a href="#正常的三进制的运算" class="headerlink" title="正常的三进制的运算"></a>正常的三进制的运算</h1><p>在有了前面的这个基础之后，我们开始制作三进制的加法法则和乘法法则。</p>
+<h2 id="加法法则"><a href="#加法法则" class="headerlink" title="加法法则"></a>加法法则</h2><p>因为三进制所涉及到的数字比较少，所以对于加法法则来说也是比较少的。</p>
+<p><img src="/2020/02/25/%E8%BF%9B%E5%88%B6%E7%9A%84%E6%9C%AC%E8%B4%A8/6.png" alt></p>
+<p><code>1+1=</code> 也就是在1的基础上，往后数一个数，参照第一张表，1往后数一数是2，所以<code>1+1=2</code>；然后看<code>1+2=</code> 依照前面的思路，从1往后数两个数，便是10，所以<code>1+2=10</code>；同理<code>2+2=</code> 也就是在2的基础上往后数两位，便是11，所以<code>2+2=11</code>。</p>
+<p><img src="/2020/02/25/%E8%BF%9B%E5%88%B6%E7%9A%84%E6%9C%AC%E8%B4%A8/7.png" alt></p>
+<p>加法法则就是往后数个数，那同理乘法法则就是往后数成倍的个数。</p>
+<h2 id="乘法法则"><a href="#乘法法则" class="headerlink" title="乘法法则"></a>乘法法则</h2><p>由于三进制的基数太小，其中的乘法应用体现不出来，与加法法则的效果是一样的</p>
+<p><img src="/2020/02/25/%E8%BF%9B%E5%88%B6%E7%9A%84%E6%9C%AC%E8%B4%A8/8.png" alt></p>
+<h2 id="基本运算"><a href="#基本运算" class="headerlink" title="基本运算"></a>基本运算</h2><p>由于三进制的范围太小，在七进制运算的时候详细说</p>
+<h1 id="正常的七进制的运算"><a href="#正常的七进制的运算" class="headerlink" title="正常的七进制的运算"></a>正常的七进制的运算</h1><p>开始选择三进制是为了后面对进制进行变化的时候方便，结果体现不出来加法法则和乘法法则的实际使用效果了，这里就使用七进制来展示一下具体的使用方法，它们的操作是一样的。</p>
+<p>首先，先写出一堆七进制的数，仔细观察还是能发现一些规律的，但是一定要按照数个数的思维去找规律。</p>
+<p><img src="/2020/02/25/%E8%BF%9B%E5%88%B6%E7%9A%84%E6%9C%AC%E8%B4%A8/9.png" alt></p>
+<p>接下来是加法法则和乘法法则</p>
+<h2 id="加法法则-1"><a href="#加法法则-1" class="headerlink" title="加法法则"></a>加法法则</h2><p>依照前面数数的方式来从表里面找就可以了，这里用<code>4+5=</code> 来举例，按照前面的方法，就是从4开始往后数5个数，便为12，其他的都是同样的方法。</p>
+<p><img src="/2020/02/25/%E8%BF%9B%E5%88%B6%E7%9A%84%E6%9C%AC%E8%B4%A8/10.png" alt></p>
+<h2 id="乘法法则-1"><a href="#乘法法则-1" class="headerlink" title="乘法法则"></a>乘法法则</h2><p>乘法就是多次的加法，这里用<code>2*3=</code> 来举例，2<em>3转换成加法就是两个3相加，也就是从3往后数3个数，便为6，所以`2</em>3=6`，其他的方法类似。</p>
+<p><img src="/2020/02/25/%E8%BF%9B%E5%88%B6%E7%9A%84%E6%9C%AC%E8%B4%A8/11.png" alt></p>
+<h2 id="基本运算-1"><a href="#基本运算-1" class="headerlink" title="基本运算"></a>基本运算</h2><p>进制的加减乘除运算依靠前面写出来的两个加发表和乘法表就可以满足了，一切依旧是查表，记住进制的本质就是查表。</p>
+<p>加：<code>23456+54356=</code></p>
+<p>我们从最后一个位看，(这里一直都是说的第几位，因为个位十位等都是十进制才有的，其他进制并没有这么个叫法)，是两个6相加，查表得15，所以<strong>最后一位结果为5</strong>，1向前进位；再看倒数第二位，两个5相加，查表的13，加上刚刚进位的1，通过查表可知结果为14，所以<strong>倒数第二位结果为4</strong>，1向前进位；4和3相加，查表得10，进位得11，<strong>结果为1</strong>，1向前进位；3和4相加，查表得10，进位得11，<strong>结果为1</strong>，1向前进位；2和5相加，查表得10，进位<strong>得11</strong>；所以最终结果为<strong>111145</strong>。</p>
+<p>减：<code>5621-654=</code></p>
+<p>看最后一位，1减4减不过，借位得11，11减4，查表可知<code>4+4=11</code>，所以<strong>最后一位结果为4</strong>；2被借位为1，1减5减不过，借位得11，11减5查表<strong>得3</strong>；6被借位为5，5减6减不过，借位得15，15减6查表<strong>得6</strong>；5被借位<strong>为4</strong>，所以最终结果为<strong>4634</strong>。</p>
+<p>乘：<code>234*65=</code></p>
+<p>看最后一位，4乘5，查表得26，<strong>结果为6</strong>，2进位；3乘5，查表得21，进位得23，<strong>结果为3</strong>，2进位；2乘5，查表得13，进位<strong>得15</strong>，所以第一个数得结果<strong>为1536</strong>；然后算到处第二位，同样的方法<strong>得2103</strong>；最后1536加21030，(乘法计算的最后两数相加是错位的，所以这里写成了21030)<strong>得22566</strong>。</p>
+<p>除法也是同样的方法。</p>
+<h1 id="变异的三进制运算"><a href="#变异的三进制运算" class="headerlink" title="变异的三进制运算"></a>变异的三进制运算</h1><p>前面已经把正常情况下的进制转换和运算说清楚了，但为什么前面一直说它们是正常的，因为那些符合我们平常的运算概念，但是谁又规定三进制必须是0、1、2，我要是选!、@、#作为三进制的基本元素可以不？可以，那我使用2、0、1作为基本元素可以不？一点问题也没有，那我能不能使用三个图片来作为基本元素？也是没有问题的；而且在这样的情况下，还有一个好处，不知道你的进制规范的是看不懂其中具体的内容的，这也就是通过自定义进制元素的方式实现了所谓的<strong>进制加密</strong>。</p>
+<p>那我们就按照2、0、1作为基本元素来写一下这个情况下的三进制表示。</p>
+<p><img src="/2020/02/25/%E8%BF%9B%E5%88%B6%E7%9A%84%E6%9C%AC%E8%B4%A8/12.png" alt></p>
+<p>最后我们换一种方式来表示，再来感受一下进制</p>
+<p><img src="/2020/02/25/%E8%BF%9B%E5%88%B6%E7%9A%84%E6%9C%AC%E8%B4%A8/13.png" alt></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>进制的本质就是查表，进制的本质就是掰手指头数数。</p>
+]]></content>
+      <categories>
+        <category>汇编</category>
+      </categories>
+  </entry>
+  <entry>
     <title>基于数组越界的缓冲区溢出</title>
     <url>/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/</url>
     <content><![CDATA[<p>上一篇文章说了函数调用时候的堆栈变化，这里就基于这个内容来验证一下基于数组越界的缓冲区溢出。</p>
@@ -91,21 +146,6 @@
       </categories>
   </entry>
   <entry>
-    <title>算法之二分查找（上）-c语言实现</title>
-    <url>/2020/02/07/%E7%AE%97%E6%B3%95%E4%B9%8B%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE%EF%BC%88%E4%B8%8A%EF%BC%89-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/</url>
-    <content><![CDATA[<p>使用递归来实现的，逻辑比较简单，也不是太复杂的东西，直接上代码了</p>
-<a id="more"></a>
-
-<p>如果需要下载代码，请移步至文末</p>
-<p><img src="/2020/02/07/%E7%AE%97%E6%B3%95%E4%B9%8B%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE%EF%BC%88%E4%B8%8A%EF%BC%89-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/carbon-7.png" alt></p>
-<p>代码：<a href="https://github.com/veselwuxin/code.seclibs.com/blob/master/c/Simple_binary_search.c" target="_blank" rel="noopener">GitHub</a></p>
-]]></content>
-      <categories>
-        <category>数据结构与算法</category>
-        <category>C/C++</category>
-      </categories>
-  </entry>
-  <entry>
     <title>算法之二分查找（上）</title>
     <url>/2020/02/07/%E7%AE%97%E6%B3%95%E4%B9%8B%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE%EF%BC%88%E4%B8%8A%EF%BC%89/</url>
     <content><![CDATA[<p>二分查找在平时的生活中也挺常用的，比如说以前玩的猜数游戏，每次都取中间数，然后得知是大了，还是小了，这个例子也就是二分查找。</p>
@@ -126,6 +166,21 @@
 ]]></content>
       <categories>
         <category>数据结构与算法</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>算法之二分查找（上）-c语言实现</title>
+    <url>/2020/02/07/%E7%AE%97%E6%B3%95%E4%B9%8B%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE%EF%BC%88%E4%B8%8A%EF%BC%89-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/</url>
+    <content><![CDATA[<p>使用递归来实现的，逻辑比较简单，也不是太复杂的东西，直接上代码了</p>
+<a id="more"></a>
+
+<p>如果需要下载代码，请移步至文末</p>
+<p><img src="/2020/02/07/%E7%AE%97%E6%B3%95%E4%B9%8B%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE%EF%BC%88%E4%B8%8A%EF%BC%89-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/carbon-7.png" alt></p>
+<p>代码：<a href="https://github.com/veselwuxin/code.seclibs.com/blob/master/c/Simple_binary_search.c" target="_blank" rel="noopener">GitHub</a></p>
+]]></content>
+      <categories>
+        <category>数据结构与算法</category>
+        <category>C/C++</category>
       </categories>
   </entry>
   <entry>
@@ -386,22 +441,6 @@
       </categories>
   </entry>
   <entry>
-    <title>算法之递归-c语言实现</title>
-    <url>/2020/02/02/%E7%AE%97%E6%B3%95%E4%B9%8B%E9%80%92%E5%BD%92-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/</url>
-    <content><![CDATA[<p>在上一篇文章里说了递归，这里就使用其中的上楼梯问题来进行代码实现</p>
-<a id="more"></a>
-
-<p>在上一篇文章里说了递归，这里就使用其中的上楼梯问题来进行代码实现，在上一篇文章里也说过了中间会有重复计算的情况，这里我们使用一维动态数组来进行存储，一维数组的索引值就与楼梯层数相同，可以更加清晰的理解其中的含义，代码如下</p>
-<p>如果需要下载代码，请移步至文末</p>
-<p><img src="/2020/02/02/%E7%AE%97%E6%B3%95%E4%B9%8B%E9%80%92%E5%BD%92-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/carbon-2-2.png" alt></p>
-<p>代码：<a href="https://github.com/veselwuxin/code.seclibs.com/blob/master/c/Recursion.c" target="_blank" rel="noopener">GitHub</a></p>
-]]></content>
-      <categories>
-        <category>数据结构与算法</category>
-        <category>C/C++</category>
-      </categories>
-  </entry>
-  <entry>
     <title>算法之递归</title>
     <url>/2020/02/02/%E7%AE%97%E6%B3%95%E4%B9%8B%E9%80%92%E5%BD%92/</url>
     <content><![CDATA[<p>递归是一种应用非常广泛的算法，在很多的数据结构和算法的编码中都会用到，理解递归是非常重要的。</p>
@@ -445,6 +484,22 @@
 ]]></content>
       <categories>
         <category>数据结构与算法</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>算法之递归-c语言实现</title>
+    <url>/2020/02/02/%E7%AE%97%E6%B3%95%E4%B9%8B%E9%80%92%E5%BD%92-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/</url>
+    <content><![CDATA[<p>在上一篇文章里说了递归，这里就使用其中的上楼梯问题来进行代码实现</p>
+<a id="more"></a>
+
+<p>在上一篇文章里说了递归，这里就使用其中的上楼梯问题来进行代码实现，在上一篇文章里也说过了中间会有重复计算的情况，这里我们使用一维动态数组来进行存储，一维数组的索引值就与楼梯层数相同，可以更加清晰的理解其中的含义，代码如下</p>
+<p>如果需要下载代码，请移步至文末</p>
+<p><img src="/2020/02/02/%E7%AE%97%E6%B3%95%E4%B9%8B%E9%80%92%E5%BD%92-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/carbon-2-2.png" alt></p>
+<p>代码：<a href="https://github.com/veselwuxin/code.seclibs.com/blob/master/c/Recursion.c" target="_blank" rel="noopener">GitHub</a></p>
+]]></content>
+      <categories>
+        <category>数据结构与算法</category>
+        <category>C/C++</category>
       </categories>
   </entry>
   <entry>
