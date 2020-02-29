@@ -1,6 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>PE头说明</title>
+    <url>/2020/02/29/PE%E5%A4%B4%E8%AF%B4%E6%98%8E/</url>
+    <content><![CDATA[<p>对PE头的了解直接决定了对它的利用程度</p>
+<a id="more"></a>
+
+<h1 id="PE结构整体图"><a href="#PE结构整体图" class="headerlink" title="PE结构整体图"></a>PE结构整体图</h1><p><img src="/2020/02/29/PE%E5%A4%B4%E8%AF%B4%E6%98%8E/02.jpg" alt></p>
+<h1 id="程序读取文件PE头"><a href="#程序读取文件PE头" class="headerlink" title="程序读取文件PE头"></a>程序读取文件PE头</h1><p>PE头分为DOS头和NT头，其中NT头又包括PE标识、PE标准头和PE可选头三个，虽然叫做可选头，但它也是不可缺少的。</p>
+<p>这里通过一个程序将其内容都读取出来，并对关键内容进行了标识，其中所列出来的PE头信息都是必须要记住的，加 * 的内容都是重中之重，加 - 的内容是编译器填写并且在现在的程序中是没有用处的，即修改不影响运行的，我们可以对其进行利用。</p>
+<p>这里先给出最后的运行结果图</p>
+<p><img src="/2020/02/29/PE%E5%A4%B4%E8%AF%B4%E6%98%8E/01.png" alt></p>
+<p>代码如下：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;windows.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">filesize</span><span class="params">(FILE* file)</span> </span>&#123;</span><br><span class="line">	fseek(file, <span class="number">0</span>, SEEK_END);</span><br><span class="line">	<span class="keyword">int</span> <span class="built_in">size</span> = ftell(file);</span><br><span class="line">	fseek(file, <span class="number">0</span>, SEEK_SET);</span><br><span class="line">	<span class="keyword">return</span> <span class="built_in">size</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">DOS_Header</span><span class="params">(LPSTR pFileBuffer)</span> </span>&#123;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"----------DOSHeader----------\n"</span>);</span><br><span class="line">	PIMAGE_DOS_HEADER pDosHeader = (PIMAGE_DOS_HEADER)pFileBuffer;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// *(PWORD)pDosHeader != IMAGE_DOS_SIGNATURE</span></span><br><span class="line">	<span class="keyword">if</span> ((WORD)pDosHeader-&gt;e_magic != IMAGE_DOS_SIGNATURE) &#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"DOSHeader failed:MZ"</span>);</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"*  e_magic:%x\n"</span>, (WORD)pDosHeader-&gt;e_magic);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"*  e_lfanew:%08x\n"</span>, (DWORD)pDosHeader-&gt;e_lfanew);</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">return</span> pDosHeader-&gt;e_lfanew;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">NT_Header</span><span class="params">(LPSTR pFileBuffer, <span class="keyword">int</span> NT_addr)</span> </span>&#123;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"----------NTHeader----------\n"</span>);</span><br><span class="line">	PIMAGE_NT_HEADERS pNtHeader = (PIMAGE_NT_HEADERS)(pFileBuffer + NT_addr);</span><br><span class="line">	<span class="keyword">if</span> ((WORD)pNtHeader-&gt;Signature != IMAGE_NT_SIGNATURE) &#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"NTHeader failed:NT"</span>);</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"Signature:%08x\n"</span>, (DWORD)pNtHeader-&gt;Signature);</span><br><span class="line"></span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"----------FileHeader----------\n"</span>);</span><br><span class="line">	PIMAGE_FILE_HEADER FileHeader = (PIMAGE_FILE_HEADER)((DWORD)pNtHeader + <span class="number">4</span>);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"*  Machine:%04x\n"</span>, FileHeader-&gt;Machine);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"*  NumberOfSections:%04x\n"</span>, FileHeader-&gt;NumberOfSections);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"TimeDateStamp:%08x\n"</span>, FileHeader-&gt;TimeDateStamp);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"*  SizeOfOptionalHeader:%04x\n"</span>, FileHeader-&gt;SizeOfOptionalHeader);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"Characteristics:%04x\n"</span>, FileHeader-&gt;Characteristics);</span><br><span class="line"></span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"----------OptionalHeader----------\n"</span>);</span><br><span class="line">	PIMAGE_OPTIONAL_HEADER32 OptionalHeader = (PIMAGE_OPTIONAL_HEADER32)((DWORD)pNtHeader + <span class="number">4</span> + <span class="keyword">sizeof</span>(_IMAGE_FILE_HEADER));</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"*  Magic:%04x\n"</span>, OptionalHeader-&gt;Magic);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"- SizeOfCode:%08x\n"</span>, OptionalHeader-&gt;SizeOfCode);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"- SizeOfInitializedData:%08x\n"</span>, OptionalHeader-&gt;SizeOfInitializedData);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"- SizeOfUninitializedData:%08x\n"</span>, OptionalHeader-&gt;SizeOfUninitializedData);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"*  AddressOfEntryPoint:%08x\n"</span>, OptionalHeader-&gt;AddressOfEntryPoint);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"- BaseOfCode:%08x\n"</span>, OptionalHeader-&gt;BaseOfCode);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"- BaseOfData:%08x\n"</span>, OptionalHeader-&gt;BaseOfData);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"*  ImageBase:%08x\n"</span>, OptionalHeader-&gt;ImageBase);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"*  SectionAlignment:%08x\n"</span>, OptionalHeader-&gt;SectionAlignment);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"*  FileAlignment:%08x\n"</span>, OptionalHeader-&gt;FileAlignment);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"*  SizeOfImage:%08x\n"</span>, OptionalHeader-&gt;SizeOfImage);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"*  SizeOfHeaders:%08x\n"</span>, OptionalHeader-&gt;SizeOfHeaders);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"CheckSum:%08x\n"</span>, OptionalHeader-&gt;CheckSum);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"SizeOfStackReserve:%08x\n"</span>, OptionalHeader-&gt;SizeOfStackReserve);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"SizeOfStackCommit:%08x\n"</span>, OptionalHeader-&gt;SizeOfStackCommit);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"SizeOfHeapReserve:%08x\n"</span>, OptionalHeader-&gt;SizeOfHeapReserve);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"SizeOfHeapCommit:%08x\n"</span>, OptionalHeader-&gt;SizeOfHeapCommit);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"NumberOfRvaAndSizes:%08x\n"</span>, OptionalHeader-&gt;NumberOfRvaAndSizes);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span>* argv[])</span> </span>&#123;</span><br><span class="line">	FILE* tFile = fopen(<span class="string">"C:\\Users\\veselwuxin\\Desktop\\wtest.exe"</span>, <span class="string">"rb"</span>);</span><br><span class="line">	<span class="keyword">if</span> (tFile == <span class="literal">NULL</span>) &#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"file open failed\n"</span>);</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">int</span> <span class="built_in">size</span> = filesize(tFile);</span><br><span class="line">	<span class="keyword">char</span>* FileBuffer = (<span class="keyword">char</span>*)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(<span class="keyword">char</span>) * <span class="built_in">size</span>);</span><br><span class="line">	<span class="keyword">if</span> (!FileBuffer) &#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"Alloc FileBuffer Failed\n"</span>);</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">memset</span>(FileBuffer, <span class="number">0</span>, <span class="keyword">sizeof</span>(<span class="keyword">char</span>) * <span class="built_in">size</span>);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">int</span> freadsize = fread(FileBuffer, <span class="number">1</span>, <span class="keyword">sizeof</span>(<span class="keyword">char</span>) * <span class="built_in">size</span>, tFile);</span><br><span class="line">	<span class="keyword">if</span> (freadsize != <span class="keyword">sizeof</span>(<span class="keyword">char</span>) * <span class="built_in">size</span>) &#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"FileBuffer Write Failed\n"</span>);</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"FileBuffer address:%p\n"</span>, FileBuffer);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//_IMAGE_DOS_HEADER</span></span><br><span class="line">	<span class="comment">//_IMAGE_NT_HEADERS</span></span><br><span class="line">	<span class="comment">//_IMAGE_FILE_HEADER</span></span><br><span class="line">	<span class="comment">//_IMAGE_OPTIONAL_HEADER</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">int</span> NT_addr = DOS_Header(FileBuffer);</span><br><span class="line">	NT_Header(FileBuffer, NT_addr);</span><br><span class="line"></span><br><span class="line">	<span class="built_in">free</span>(FileBuffer);</span><br><span class="line">	FileBuffer = <span class="literal">NULL</span>;</span><br><span class="line">	tFile = <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>代码地址：<a href="https://github.com/veselwuxin/code.seclibs.com/blob/master/pe/Read_PE_Header.cpp" target="_blank" rel="noopener">GitHub</a></p>
+<h1 id="PE头结构体"><a href="#PE头结构体" class="headerlink" title="PE头结构体"></a>PE头结构体</h1><h2 id="IMAGE-DOS-HEADER"><a href="#IMAGE-DOS-HEADER" class="headerlink" title="_IMAGE_DOS_HEADER"></a>_IMAGE_DOS_HEADER</h2><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">IMAGE_DOS_HEADER</span> &#123;</span>      <span class="comment">// DOS .EXE header</span></span><br><span class="line">    WORD   e_magic;                     <span class="comment">// Magic number</span></span><br><span class="line">    WORD   e_cblp;                      <span class="comment">// Bytes on last page of file</span></span><br><span class="line">    WORD   e_cp;                        <span class="comment">// Pages in file</span></span><br><span class="line">    WORD   e_crlc;                      <span class="comment">// Relocations</span></span><br><span class="line">    WORD   e_cparhdr;                   <span class="comment">// Size of header in paragraphs</span></span><br><span class="line">    WORD   e_minalloc;                  <span class="comment">// Minimum extra paragraphs needed</span></span><br><span class="line">    WORD   e_maxalloc;                  <span class="comment">// Maximum extra paragraphs needed</span></span><br><span class="line">    WORD   e_ss;                        <span class="comment">// Initial (relative) SS value</span></span><br><span class="line">    WORD   e_sp;                        <span class="comment">// Initial SP value</span></span><br><span class="line">    WORD   e_csum;                      <span class="comment">// Checksum</span></span><br><span class="line">    WORD   e_ip;                        <span class="comment">// Initial IP value</span></span><br><span class="line">    WORD   e_cs;                        <span class="comment">// Initial (relative) CS value</span></span><br><span class="line">    WORD   e_lfarlc;                    <span class="comment">// File address of relocation table</span></span><br><span class="line">    WORD   e_ovno;                      <span class="comment">// Overlay number</span></span><br><span class="line">    WORD   e_res[<span class="number">4</span>];                    <span class="comment">// Reserved words</span></span><br><span class="line">    WORD   e_oemid;                     <span class="comment">// OEM identifier (for e_oeminfo)</span></span><br><span class="line">    WORD   e_oeminfo;                   <span class="comment">// OEM information; e_oemid specific</span></span><br><span class="line">    WORD   e_res2[<span class="number">10</span>];                  <span class="comment">// Reserved words</span></span><br><span class="line">    LONG   e_lfanew;                    <span class="comment">// File address of new exe header</span></span><br><span class="line">  &#125; IMAGE_DOS_HEADER, *PIMAGE_DOS_HEADER;</span><br></pre></td></tr></table></figure>
+
+<h2 id="IMAGE-NT-HEADERS"><a href="#IMAGE-NT-HEADERS" class="headerlink" title="_IMAGE_NT_HEADERS"></a>_IMAGE_NT_HEADERS</h2><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">IMAGE_NT_HEADERS</span> &#123;</span></span><br><span class="line">    DWORD Signature;</span><br><span class="line">    IMAGE_FILE_HEADER FileHeader;</span><br><span class="line">    IMAGE_OPTIONAL_HEADER32 OptionalHeader;</span><br><span class="line">&#125; IMAGE_NT_HEADERS32, *PIMAGE_NT_HEADERS32;</span><br></pre></td></tr></table></figure>
+
+<h2 id="IMAGE-FILE-HEADER"><a href="#IMAGE-FILE-HEADER" class="headerlink" title="_IMAGE_FILE_HEADER"></a>_IMAGE_FILE_HEADER</h2><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">IMAGE_FILE_HEADER</span> &#123;</span></span><br><span class="line">    WORD    Machine;</span><br><span class="line">    WORD    NumberOfSections;</span><br><span class="line">    DWORD   TimeDateStamp;</span><br><span class="line">    DWORD   PointerToSymbolTable;</span><br><span class="line">    DWORD   NumberOfSymbols;</span><br><span class="line">    WORD    SizeOfOptionalHeader;</span><br><span class="line">    WORD    Characteristics;</span><br><span class="line">&#125; IMAGE_FILE_HEADER, *PIMAGE_FILE_HEADER;</span><br></pre></td></tr></table></figure>
+
+<h2 id="IMAGE-OPTIONAL-HEADER"><a href="#IMAGE-OPTIONAL-HEADER" class="headerlink" title="_IMAGE_OPTIONAL_HEADER"></a>_IMAGE_OPTIONAL_HEADER</h2><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">IMAGE_OPTIONAL_HEADER</span> &#123;</span></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    <span class="comment">// Standard fields.</span></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line"></span><br><span class="line">    WORD    Magic;</span><br><span class="line">    BYTE    MajorLinkerVersion;</span><br><span class="line">    BYTE    MinorLinkerVersion;</span><br><span class="line">    DWORD   SizeOfCode;</span><br><span class="line">    DWORD   SizeOfInitializedData;</span><br><span class="line">    DWORD   SizeOfUninitializedData;</span><br><span class="line">    DWORD   AddressOfEntryPoint;</span><br><span class="line">    DWORD   BaseOfCode;</span><br><span class="line">    DWORD   BaseOfData;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    <span class="comment">// NT additional fields.</span></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line"></span><br><span class="line">    DWORD   ImageBase;</span><br><span class="line">    DWORD   SectionAlignment;</span><br><span class="line">    DWORD   FileAlignment;</span><br><span class="line">    WORD    MajorOperatingSystemVersion;</span><br><span class="line">    WORD    MinorOperatingSystemVersion;</span><br><span class="line">    WORD    MajorImageVersion;</span><br><span class="line">    WORD    MinorImageVersion;</span><br><span class="line">    WORD    MajorSubsystemVersion;</span><br><span class="line">    WORD    MinorSubsystemVersion;</span><br><span class="line">    DWORD   Win32VersionValue;</span><br><span class="line">    DWORD   SizeOfImage;</span><br><span class="line">    DWORD   SizeOfHeaders;</span><br><span class="line">    DWORD   CheckSum;</span><br><span class="line">    WORD    Subsystem;</span><br><span class="line">    WORD    DllCharacteristics;</span><br><span class="line">    DWORD   SizeOfStackReserve;</span><br><span class="line">    DWORD   SizeOfStackCommit;</span><br><span class="line">    DWORD   SizeOfHeapReserve;</span><br><span class="line">    DWORD   SizeOfHeapCommit;</span><br><span class="line">    DWORD   LoaderFlags;</span><br><span class="line">    DWORD   NumberOfRvaAndSizes;</span><br><span class="line">    IMAGE_DATA_DIRECTORY DataDirectory[IMAGE_NUMBEROF_DIRECTORY_ENTRIES];</span><br><span class="line">&#125; IMAGE_OPTIONAL_HEADER32, *PIMAGE_OPTIONAL_HEADER32;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>最后的<code>IMAGE_DATA_DIRECTORY DataDirectory[IMAGE_NUMBEROF_DIRECTORY_ENTRIES];</code>也是比较重要的一块，这里暂时不提。</li>
+</ul>
+<h1 id="部分PE头说明"><a href="#部分PE头说明" class="headerlink" title="部分PE头说明"></a>部分PE头说明</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">WORD e_magic     &quot;MZ标记&quot; 用于判断是否为可执行文件</span><br><span class="line">DWORD e_lfanew     PE头相对于文件的偏移，用于定位PE文件</span><br><span class="line"></span><br><span class="line">WORD Machine     程序运行的CPU型号：0x0 任何处理器&#x2F;0x14C 386及后续处理器</span><br><span class="line">WORD NumberOfSections     文件中存在的节的总数,如果要新增节或者合并节 就要修改这个值</span><br><span class="line">DWORD TimeDateStamp     时间戳：文件的创建时间(和操作系统的创建时间无关)，编译器填写的</span><br><span class="line">WORD SizeOfOptionalHeader     可选PE头的大小，32位PE文件默认E0h 64位PE文件默认为F0h  大小可以自定义</span><br><span class="line">WORD Characteristics     每个位有不同的含义，可执行文件值为10F 即0 1 2 3 8位置1 </span><br><span class="line"></span><br><span class="line">WORD Magic     说明文件类型：10B 32位下的PE文件     20B 64位下的PE文件</span><br><span class="line">DWORD SizeOfCode     所有代码节的和，必须是FileAlignment的整数倍 编译器填的  没用</span><br><span class="line">DWORD SizeOfInitializedData     已初始化数据大小的和,必须是FileAlignment的整数倍 编译器填的，没用</span><br><span class="line">DWORD SizeOfUninitializedData     未初始化数据大小的和,必须是FileAlignment的整数倍 编译器填的，没用</span><br><span class="line">DWORD AddressOfEntryPoint     程序入口</span><br><span class="line">DWORD BaseOfCode     代码开始的基址，编译器填的，没用</span><br><span class="line">DWORD BaseOfData     数据开始的基址，编译器填的，没用</span><br><span class="line">DWORD ImageBase     内存镜像基址</span><br><span class="line">DWORD SectionAlignment     内存对齐</span><br><span class="line">DWORD FileAlignment     文件对齐</span><br><span class="line">DWORD SizeOfImage     内存中整个PE文件的映射的尺寸，可以比实际的值大，但必须是SectionAlignment的整数倍</span><br><span class="line">DWORD SizeOfHeaders     所有头+节表按照文件对齐后的大小，否则加载会出错</span><br><span class="line">DWORD CheckSum     校验和，一些系统文件有要求，用来判断文件是否被修改，一般是驱动级的程序需要，但是算法是已知的，可以修改完成后自己重新计算出CheckSum的值</span><br><span class="line">DWORD SizeOfStackReserve     初始化时保留的堆栈大小</span><br><span class="line">DWORD SizeOfStackCommit     初始化时实际提交的大小</span><br><span class="line">DWORD SizeOfHeapReserve     初始化时保留的堆大小</span><br><span class="line">DWORD SizeOfHeapCommit     初始化时实践提交的大小</span><br><span class="line">DWORD NumberOfRvaAndSizes     目录项数目</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>PE</category>
+      </categories>
+  </entry>
+  <entry>
     <title>进制的本质</title>
     <url>/2020/02/25/%E8%BF%9B%E5%88%B6%E7%9A%84%E6%9C%AC%E8%B4%A8/</url>
     <content><![CDATA[<p>什么是进制，进制的本质又是什么，为什么在计算的时候都会把十进制作为中间转换，其实这样的思维完全是错误的，进制的本质并不是我们熟悉的十进制。</p>
@@ -50,35 +82,6 @@
 <p>最后我们换一种方式来表示，再来感受一下进制</p>
 <p><img src="/2020/02/25/%E8%BF%9B%E5%88%B6%E7%9A%84%E6%9C%AC%E8%B4%A8/13.png" alt></p>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>进制的本质就是查表，进制的本质就是掰手指头数数。</p>
-]]></content>
-      <categories>
-        <category>汇编</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>基于数组越界的缓冲区溢出</title>
-    <url>/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/</url>
-    <content><![CDATA[<p>上一篇文章说了函数调用时候的堆栈变化，这里就基于这个内容来验证一下基于数组越界的缓冲区溢出。</p>
-<a id="more"></a>
-
-<p>在c语言中，数组必须是静态的，也就是在定义的时候必须明确数组的大小，在根本上来说，这个是堆栈提升的原因，只有在数组的大小确定的时候，才能明确堆栈到底要提升多少，如果数组的大小是动态变化的，就极容易发生缓冲区溢出；而且c语言也不具备Java等语言中静态分析的功能，不会去检测数组是否有上溢或者下溢，其边界的检验是有程序员负责的，所以这就造成了一些问题，我们可以通过数组越界来改变一些内容。</p>
-<p>首先来看一下这次的实验程序</p>
-<p><img src="/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/image-36.png" alt></p>
-<p>正常来说，test1函数并没有被调用，所以是不会打印出12345的，而实际的情况却不是这样的</p>
-<p><img src="/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/image-37.png" alt></p>
-<p>造成这样的情况，就是由于数组越界而造成的缓冲区溢出，这其中还有一个编译器的坑，在后面再解释。</p>
-<p>我们直接在数组处下断点，前面的提升堆栈等操作就不细说了，前一篇文章已经走过一边流程了，这里直接给出到这一步的堆栈图。</p>
-<p><img src="/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/image-41.png" alt></p>
-<p>然后我们看一下编译器是如何处理数组赋值的内容的</p>
-<p><img src="/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/image-40.png" alt></p>
-<p>经过这段赋值操作，此时堆栈已经变成了下图，这里单独从中拎出来10行方便观看。</p>
-<p><img src="/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/image-42.png" alt></p>
-<p>通过堆栈图我们可以很清晰的看到，明明只有8个数，它确是从ebp-24h开始排的，也就是说ebp-4的位置是没有使用的，这个也就是前面所说的坑，经过查询资料，发现从vs2010开始，ebp-4就都没有使用，具体是用来做什么的，暂时还不清楚，所以如果这里你使用的是vc6.0的话，这里就是从ebp-4开始排的。</p>
-<p>好了说了上面那个坑，接着回来说堆栈图，在上一篇文章里我们已经很清楚函数在调用的时候会先把call语句的下一行地址压入栈中，所以图中b[10]的位置也就代表了ret返回地址的位置，在vc6.0中此处应该是b[9]，如果我们将这个地址替换为我们想让程序到达的位置，也就可以控制程序的运行轨迹了。</p>
-<p><img src="/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/image-43.png" alt></p>
-<p>在后面的操作就是将test1函数的地址赋给了b[10]，也就代替了之前函数的返回地址，这个函数在执行完成后便会返回test1函数的位置081137Ah。</p>
-<p><img src="/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/image-44.png" alt></p>
-<p>也就达到了缓冲区溢出的效果。</p>
 ]]></content>
       <categories>
         <category>汇编</category>
@@ -146,6 +149,50 @@
       </categories>
   </entry>
   <entry>
+    <title>基于数组越界的缓冲区溢出</title>
+    <url>/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/</url>
+    <content><![CDATA[<p>上一篇文章说了函数调用时候的堆栈变化，这里就基于这个内容来验证一下基于数组越界的缓冲区溢出。</p>
+<a id="more"></a>
+
+<p>在c语言中，数组必须是静态的，也就是在定义的时候必须明确数组的大小，在根本上来说，这个是堆栈提升的原因，只有在数组的大小确定的时候，才能明确堆栈到底要提升多少，如果数组的大小是动态变化的，就极容易发生缓冲区溢出；而且c语言也不具备Java等语言中静态分析的功能，不会去检测数组是否有上溢或者下溢，其边界的检验是有程序员负责的，所以这就造成了一些问题，我们可以通过数组越界来改变一些内容。</p>
+<p>首先来看一下这次的实验程序</p>
+<p><img src="/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/image-36.png" alt></p>
+<p>正常来说，test1函数并没有被调用，所以是不会打印出12345的，而实际的情况却不是这样的</p>
+<p><img src="/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/image-37.png" alt></p>
+<p>造成这样的情况，就是由于数组越界而造成的缓冲区溢出，这其中还有一个编译器的坑，在后面再解释。</p>
+<p>我们直接在数组处下断点，前面的提升堆栈等操作就不细说了，前一篇文章已经走过一边流程了，这里直接给出到这一步的堆栈图。</p>
+<p><img src="/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/image-41.png" alt></p>
+<p>然后我们看一下编译器是如何处理数组赋值的内容的</p>
+<p><img src="/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/image-40.png" alt></p>
+<p>经过这段赋值操作，此时堆栈已经变成了下图，这里单独从中拎出来10行方便观看。</p>
+<p><img src="/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/image-42.png" alt></p>
+<p>通过堆栈图我们可以很清晰的看到，明明只有8个数，它确是从ebp-24h开始排的，也就是说ebp-4的位置是没有使用的，这个也就是前面所说的坑，经过查询资料，发现从vs2010开始，ebp-4就都没有使用，具体是用来做什么的，暂时还不清楚，所以如果这里你使用的是vc6.0的话，这里就是从ebp-4开始排的。</p>
+<p>好了说了上面那个坑，接着回来说堆栈图，在上一篇文章里我们已经很清楚函数在调用的时候会先把call语句的下一行地址压入栈中，所以图中b[10]的位置也就代表了ret返回地址的位置，在vc6.0中此处应该是b[9]，如果我们将这个地址替换为我们想让程序到达的位置，也就可以控制程序的运行轨迹了。</p>
+<p><img src="/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/image-43.png" alt></p>
+<p>在后面的操作就是将test1函数的地址赋给了b[10]，也就代替了之前函数的返回地址，这个函数在执行完成后便会返回test1函数的位置081137Ah。</p>
+<p><img src="/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/image-44.png" alt></p>
+<p>也就达到了缓冲区溢出的效果。</p>
+]]></content>
+      <categories>
+        <category>汇编</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>算法之二分查找（上）-c语言实现</title>
+    <url>/2020/02/07/%E7%AE%97%E6%B3%95%E4%B9%8B%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE%EF%BC%88%E4%B8%8A%EF%BC%89-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/</url>
+    <content><![CDATA[<p>使用递归来实现的，逻辑比较简单，也不是太复杂的东西，直接上代码了</p>
+<a id="more"></a>
+
+<p>如果需要下载代码，请移步至文末</p>
+<p><img src="/2020/02/07/%E7%AE%97%E6%B3%95%E4%B9%8B%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE%EF%BC%88%E4%B8%8A%EF%BC%89-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/carbon-7.png" alt></p>
+<p>代码：<a href="https://github.com/veselwuxin/code.seclibs.com/blob/master/c/Simple_binary_search.c" target="_blank" rel="noopener">GitHub</a></p>
+]]></content>
+      <categories>
+        <category>数据结构与算法</category>
+        <category>C/C++</category>
+      </categories>
+  </entry>
+  <entry>
     <title>算法之二分查找（上）</title>
     <url>/2020/02/07/%E7%AE%97%E6%B3%95%E4%B9%8B%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE%EF%BC%88%E4%B8%8A%EF%BC%89/</url>
     <content><![CDATA[<p>二分查找在平时的生活中也挺常用的，比如说以前玩的猜数游戏，每次都取中间数，然后得知是大了，还是小了，这个例子也就是二分查找。</p>
@@ -166,21 +213,6 @@
 ]]></content>
       <categories>
         <category>数据结构与算法</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>算法之二分查找（上）-c语言实现</title>
-    <url>/2020/02/07/%E7%AE%97%E6%B3%95%E4%B9%8B%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE%EF%BC%88%E4%B8%8A%EF%BC%89-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/</url>
-    <content><![CDATA[<p>使用递归来实现的，逻辑比较简单，也不是太复杂的东西，直接上代码了</p>
-<a id="more"></a>
-
-<p>如果需要下载代码，请移步至文末</p>
-<p><img src="/2020/02/07/%E7%AE%97%E6%B3%95%E4%B9%8B%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE%EF%BC%88%E4%B8%8A%EF%BC%89-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/carbon-7.png" alt></p>
-<p>代码：<a href="https://github.com/veselwuxin/code.seclibs.com/blob/master/c/Simple_binary_search.c" target="_blank" rel="noopener">GitHub</a></p>
-]]></content>
-      <categories>
-        <category>数据结构与算法</category>
-        <category>C/C++</category>
       </categories>
   </entry>
   <entry>
@@ -307,6 +339,29 @@
       </categories>
   </entry>
   <entry>
+    <title>算法之排序（中）-c语言实现</title>
+    <url>/2020/02/04/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%AD%EF%BC%89-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/</url>
+    <content><![CDATA[<p>上一篇文章里说了归并排序和快速排序，它们的代码实现是非常相似的，只要理解了其中的具体实现，还是比较容易写出代码的。</p>
+<a id="more"></a>
+
+<p>归并排序</p>
+<p>代码如下，需要下载代码的请移步至文末</p>
+<p><img src="/2020/02/04/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%AD%EF%BC%89-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/carbon-6.png" alt></p>
+<hr>
+<p>快速排序</p>
+<p>代码如下，需要下载代码的请移步至文末</p>
+<p><img src="/2020/02/04/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%AD%EF%BC%89-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/carbon-1-2.png" alt></p>
+<hr>
+<p>代码：</p>
+<p>归并排序：<a href="https://github.com/veselwuxin/code.seclibs.com/blob/master/c/Merge_Sort.c" target="_blank" rel="noopener">GitHub</a></p>
+<p>快速排序：<a href="https://github.com/veselwuxin/code.seclibs.com/blob/master/c/Quick_Sort.c" target="_blank" rel="noopener">GitHub</a></p>
+]]></content>
+      <categories>
+        <category>数据结构与算法</category>
+        <category>C/C++</category>
+      </categories>
+  </entry>
+  <entry>
     <title>算法之排序（中）</title>
     <url>/2020/02/04/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%AD%EF%BC%89/</url>
     <content><![CDATA[<p>上一篇文章说了时间复杂度为O(n2)的冒泡、插入和选择三个排序方式</p>
@@ -342,29 +397,6 @@
 ]]></content>
       <categories>
         <category>数据结构与算法</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>算法之排序（中）-c语言实现</title>
-    <url>/2020/02/04/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%AD%EF%BC%89-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/</url>
-    <content><![CDATA[<p>上一篇文章里说了归并排序和快速排序，它们的代码实现是非常相似的，只要理解了其中的具体实现，还是比较容易写出代码的。</p>
-<a id="more"></a>
-
-<p>归并排序</p>
-<p>代码如下，需要下载代码的请移步至文末</p>
-<p><img src="/2020/02/04/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%AD%EF%BC%89-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/carbon-6.png" alt></p>
-<hr>
-<p>快速排序</p>
-<p>代码如下，需要下载代码的请移步至文末</p>
-<p><img src="/2020/02/04/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%AD%EF%BC%89-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/carbon-1-2.png" alt></p>
-<hr>
-<p>代码：</p>
-<p>归并排序：<a href="https://github.com/veselwuxin/code.seclibs.com/blob/master/c/Merge_Sort.c" target="_blank" rel="noopener">GitHub</a></p>
-<p>快速排序：<a href="https://github.com/veselwuxin/code.seclibs.com/blob/master/c/Quick_Sort.c" target="_blank" rel="noopener">GitHub</a></p>
-]]></content>
-      <categories>
-        <category>数据结构与算法</category>
-        <category>C/C++</category>
       </categories>
   </entry>
   <entry>
@@ -441,6 +473,22 @@
       </categories>
   </entry>
   <entry>
+    <title>算法之递归-c语言实现</title>
+    <url>/2020/02/02/%E7%AE%97%E6%B3%95%E4%B9%8B%E9%80%92%E5%BD%92-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/</url>
+    <content><![CDATA[<p>在上一篇文章里说了递归，这里就使用其中的上楼梯问题来进行代码实现</p>
+<a id="more"></a>
+
+<p>在上一篇文章里说了递归，这里就使用其中的上楼梯问题来进行代码实现，在上一篇文章里也说过了中间会有重复计算的情况，这里我们使用一维动态数组来进行存储，一维数组的索引值就与楼梯层数相同，可以更加清晰的理解其中的含义，代码如下</p>
+<p>如果需要下载代码，请移步至文末</p>
+<p><img src="/2020/02/02/%E7%AE%97%E6%B3%95%E4%B9%8B%E9%80%92%E5%BD%92-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/carbon-2-2.png" alt></p>
+<p>代码：<a href="https://github.com/veselwuxin/code.seclibs.com/blob/master/c/Recursion.c" target="_blank" rel="noopener">GitHub</a></p>
+]]></content>
+      <categories>
+        <category>数据结构与算法</category>
+        <category>C/C++</category>
+      </categories>
+  </entry>
+  <entry>
     <title>算法之递归</title>
     <url>/2020/02/02/%E7%AE%97%E6%B3%95%E4%B9%8B%E9%80%92%E5%BD%92/</url>
     <content><![CDATA[<p>递归是一种应用非常广泛的算法，在很多的数据结构和算法的编码中都会用到，理解递归是非常重要的。</p>
@@ -484,22 +532,6 @@
 ]]></content>
       <categories>
         <category>数据结构与算法</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>算法之递归-c语言实现</title>
-    <url>/2020/02/02/%E7%AE%97%E6%B3%95%E4%B9%8B%E9%80%92%E5%BD%92-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/</url>
-    <content><![CDATA[<p>在上一篇文章里说了递归，这里就使用其中的上楼梯问题来进行代码实现</p>
-<a id="more"></a>
-
-<p>在上一篇文章里说了递归，这里就使用其中的上楼梯问题来进行代码实现，在上一篇文章里也说过了中间会有重复计算的情况，这里我们使用一维动态数组来进行存储，一维数组的索引值就与楼梯层数相同，可以更加清晰的理解其中的含义，代码如下</p>
-<p>如果需要下载代码，请移步至文末</p>
-<p><img src="/2020/02/02/%E7%AE%97%E6%B3%95%E4%B9%8B%E9%80%92%E5%BD%92-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/carbon-2-2.png" alt></p>
-<p>代码：<a href="https://github.com/veselwuxin/code.seclibs.com/blob/master/c/Recursion.c" target="_blank" rel="noopener">GitHub</a></p>
-]]></content>
-      <categories>
-        <category>数据结构与算法</category>
-        <category>C/C++</category>
       </categories>
   </entry>
   <entry>
