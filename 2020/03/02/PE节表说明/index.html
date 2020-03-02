@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.jpg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.jpg">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.seclibs.com').hostname,
+    root: '/',
+    scheme: 'Mist',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="上一篇文章解析了PE结构的几个头，这次把节表的结构也写了进来。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PE节表说明">
+<meta property="og:url" content="https://blog.seclibs.com/2020/03/02/PE%E8%8A%82%E8%A1%A8%E8%AF%B4%E6%98%8E/index.html">
+<meta property="og:site_name" content="Vesel『无心』&#39;Blog">
+<meta property="og:description" content="上一篇文章解析了PE结构的几个头，这次把节表的结构也写了进来。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.seclibs.com/2020/03/02/PE%E8%8A%82%E8%A1%A8%E8%AF%B4%E6%98%8E/01.png">
+<meta property="article:published_time" content="2020-03-02T05:53:14.000Z">
+<meta property="article:modified_time" content="2020-03-02T13:57:34.834Z">
+<meta property="article:author" content="wuxin">
+<meta property="article:tag" content="红队学习">
+<meta property="article:tag" content="红队笔记">
+<meta property="article:tag" content="RED TEAM">
+<meta property="article:tag" content="信安学习">
+<meta property="article:tag" content="信安笔记">
+<meta property="article:tag" content="内网渗透">
+<meta property="article:tag" content="web安全">
+<meta property="article:tag" content="环境搭建">
+<meta property="article:tag" content="红队开发">
+<meta property="article:tag" content="安全开发">
+<meta property="article:tag" content="网络安全">
+<meta property="article:tag" content="信息安全">
+<meta property="article:tag" content="零基础学习">
+<meta property="article:tag" content="学习笔记">
+<meta property="article:tag" content="无心的梦呓">
+<meta property="article:tag" content="wuxinmengyi">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.seclibs.com/2020/03/02/PE%E8%8A%82%E8%A1%A8%E8%AF%B4%E6%98%8E/01.png">
+
+<link rel="canonical" href="https://blog.seclibs.com/2020/03/02/PE%E8%8A%82%E8%A1%A8%E8%AF%B4%E6%98%8E/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>PE节表说明 | Vesel『无心』'Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Vesel『无心』'Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.seclibs.com/2020/03/02/PE%E8%8A%82%E8%A1%A8%E8%AF%B4%E6%98%8E/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/favicon.jpg">
+      <meta itemprop="name" content="wuxin">
+      <meta itemprop="description" content="记录红队相关学习笔记">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Vesel『无心』'Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          PE节表说明
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-03-02 13:53:14 / 修改时间：21:57:34" itemprop="dateCreated datePublished" datetime="2020-03-02T13:53:14+08:00">2020-03-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PE/" itemprop="url" rel="index">
+                    <span itemprop="name">PE</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>上一篇文章解析了PE结构的几个头，这次把节表的结构也写了进来。</p>
+<a id="more"></a>
+
+<p>节表储存着所有节的相关信息，节表就相当于是目录，告诉你某一个节在哪块，它的相关信息什么。</p>
+<h1 id="节表的结构及意义"><a href="#节表的结构及意义" class="headerlink" title="节表的结构及意义"></a>节表的结构及意义</h1><p>先直接给出节表的结构体方便后面的学习</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_SIZEOF_SHORT_NAME              8</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">IMAGE_SECTION_HEADER</span> &#123;</span></span><br><span class="line">    BYTE    Name[IMAGE_SIZEOF_SHORT_NAME];</span><br><span class="line">    <span class="keyword">union</span> &#123;</span><br><span class="line">            DWORD   PhysicalAddress;</span><br><span class="line">            DWORD   VirtualSize;</span><br><span class="line">    &#125; Misc;</span><br><span class="line">    DWORD   VirtualAddress;</span><br><span class="line">    DWORD   SizeOfRawData;</span><br><span class="line">    DWORD   PointerToRawData;</span><br><span class="line">    DWORD   PointerToRelocations;</span><br><span class="line">    DWORD   PointerToLinenumbers;</span><br><span class="line">    WORD    NumberOfRelocations;</span><br><span class="line">    WORD    NumberOfLinenumbers;</span><br><span class="line">    DWORD   Characteristics;</span><br><span class="line">&#125; IMAGE_SECTION_HEADER, *PIMAGE_SECTION_HEADER;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Name，可以看到第一个数组为名字，长度为8个字节，这里需要注意的是它并不是必须遵循 \0 结尾的规定，如果不以 \0 结尾，系统会自动截取8位进行处理。</li>
+<li>Misc，这是一个联合体，因为它们都是DWORD的长度，所以不需要过于区分，我们常用的都是VirtualSize，它是在没有对齐前的真实长度。</li>
+<li>VirtualAddress，它是在内存中的偏移地址。</li>
+<li>SizeOfRawData，在文件中对其后的长度。</li>
+<li>PointerToRawData，在文件中的偏移地址。</li>
+<li>PointerToRelocations、PointerToLinenumbers、NumberOfRelocations、NumberOfLinenumbers 这四个主要是在调试的时候去使用的，这里暂时先忽略掉。</li>
+<li>Characteristics，节的属性，由于节的名字是可以随便修改的，并不是说它叫<code>.date</code>，它就是数据段，我们需要通过属性来对其内容进行一个简要的判断。</li>
+</ul>
+<p>通过上面的结构可以很清楚的得到节表的长度为40个字节。</p>
+<h1 id="节表解析代码"><a href="#节表解析代码" class="headerlink" title="节表解析代码"></a>节表解析代码</h1><p>这里没有单独将节表的解析拉出来写，而是在上一篇的基础上增加的，所以这里将是PE头和节表的整体代码</p>
+<p>代码：<a href="https://github.com/veselwuxin/code.seclibs.com/blob/master/pe/Read_Section_Header.cpp" target="_blank" rel="noopener">GitHub</a></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;windows.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">filesize</span><span class="params">(FILE* file)</span> </span>&#123;</span><br><span class="line">	fseek(file, <span class="number">0</span>, SEEK_END);</span><br><span class="line">	<span class="keyword">int</span> <span class="built_in">size</span> = ftell(file);</span><br><span class="line">	fseek(file, <span class="number">0</span>, SEEK_SET);</span><br><span class="line">	<span class="keyword">return</span> <span class="built_in">size</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">DOS_Header</span><span class="params">(LPSTR pFileBuffer)</span> </span>&#123;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"----------DOSHeader----------\n"</span>);</span><br><span class="line">	PIMAGE_DOS_HEADER pDosHeader = (PIMAGE_DOS_HEADER)pFileBuffer;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// *(PWORD)pDosHeader != IMAGE_DOS_SIGNATURE</span></span><br><span class="line">	<span class="keyword">if</span> ((WORD)pDosHeader-&gt;e_magic != IMAGE_DOS_SIGNATURE) &#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"DOSHeader failed:MZ"</span>);</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"*  e_magic:%x\n"</span>, (WORD)pDosHeader-&gt;e_magic);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"*  e_lfanew:%08x\n"</span>, (DWORD)pDosHeader-&gt;e_lfanew);</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">return</span> pDosHeader-&gt;e_lfanew;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">NT_Header</span><span class="params">(LPSTR pFileBuffer, <span class="keyword">int</span> NT_addr)</span> </span>&#123;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"----------NTHeader----------\n"</span>);</span><br><span class="line">	PIMAGE_NT_HEADERS pNtHeader = (PIMAGE_NT_HEADERS)(pFileBuffer + NT_addr);</span><br><span class="line">	<span class="keyword">if</span> ((WORD)pNtHeader-&gt;Signature != IMAGE_NT_SIGNATURE) &#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"NTHeader failed:NT"</span>);</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"Signature:%08x\n"</span>, (DWORD)pNtHeader-&gt;Signature);</span><br><span class="line"></span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"----------FileHeader----------\n"</span>);</span><br><span class="line">	PIMAGE_FILE_HEADER FileHeader = (PIMAGE_FILE_HEADER)((DWORD)pNtHeader + <span class="number">4</span>);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"*  Machine:%04x\n"</span>, FileHeader-&gt;Machine);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"*  NumberOfSections:%04x\n"</span>, FileHeader-&gt;NumberOfSections);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"TimeDateStamp:%08x\n"</span>, FileHeader-&gt;TimeDateStamp);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"*  SizeOfOptionalHeader:%04x\n"</span>, FileHeader-&gt;SizeOfOptionalHeader);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"Characteristics:%04x\n"</span>, FileHeader-&gt;Characteristics);</span><br><span class="line"></span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"----------OptionalHeader----------\n"</span>);</span><br><span class="line">	PIMAGE_OPTIONAL_HEADER32 OptionalHeader = (PIMAGE_OPTIONAL_HEADER32)((DWORD)pNtHeader + <span class="number">4</span> + <span class="keyword">sizeof</span>(_IMAGE_FILE_HEADER));</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"*  Magic:%04x\n"</span>, OptionalHeader-&gt;Magic);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"- SizeOfCode:%08x\n"</span>, OptionalHeader-&gt;SizeOfCode);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"- SizeOfInitializedData:%08x\n"</span>, OptionalHeader-&gt;SizeOfInitializedData);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"- SizeOfUninitializedData:%08x\n"</span>, OptionalHeader-&gt;SizeOfUninitializedData);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"*  AddressOfEntryPoint:%08x\n"</span>, OptionalHeader-&gt;AddressOfEntryPoint);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"- BaseOfCode:%08x\n"</span>, OptionalHeader-&gt;BaseOfCode);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"- BaseOfData:%08x\n"</span>, OptionalHeader-&gt;BaseOfData);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"*  ImageBase:%08x\n"</span>, OptionalHeader-&gt;ImageBase);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"*  SectionAlignment:%08x\n"</span>, OptionalHeader-&gt;SectionAlignment);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"*  FileAlignment:%08x\n"</span>, OptionalHeader-&gt;FileAlignment);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"*  SizeOfImage:%08x\n"</span>, OptionalHeader-&gt;SizeOfImage);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"*  SizeOfHeaders:%08x\n"</span>, OptionalHeader-&gt;SizeOfHeaders);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"CheckSum:%08x\n"</span>, OptionalHeader-&gt;CheckSum);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"SizeOfStackReserve:%08x\n"</span>, OptionalHeader-&gt;SizeOfStackReserve);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"SizeOfStackCommit:%08x\n"</span>, OptionalHeader-&gt;SizeOfStackCommit);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"SizeOfHeapReserve:%08x\n"</span>, OptionalHeader-&gt;SizeOfHeapReserve);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"SizeOfHeapCommit:%08x\n"</span>, OptionalHeader-&gt;SizeOfHeapCommit);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"NumberOfRvaAndSizes:%08x\n"</span>, OptionalHeader-&gt;NumberOfRvaAndSizes);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> FileHeader-&gt;SizeOfOptionalHeader;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Section_Header</span><span class="params">(LPSTR pFileBuffer, <span class="keyword">int</span> NT_addr, <span class="keyword">int</span> SizeOfOptionalHeader)</span> </span>&#123;</span><br><span class="line">	PIMAGE_FILE_HEADER FileHeader = (PIMAGE_FILE_HEADER)(pFileBuffer + NT_addr + <span class="number">4</span>);</span><br><span class="line">	<span class="keyword">int</span> NumberOfSections = FileHeader-&gt;NumberOfSections;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"----------SectionHeader----------\n"</span>);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"SectionNum:%x\n"</span>, NumberOfSections);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"---------------------------------\n"</span>);</span><br><span class="line">	PIMAGE_SECTION_HEADER SectionHeader = (PIMAGE_SECTION_HEADER)(pFileBuffer + NT_addr + <span class="number">4</span> + <span class="keyword">sizeof</span>(_IMAGE_FILE_HEADER) + SizeOfOptionalHeader);</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; NumberOfSections; i++) &#123;</span><br><span class="line">		<span class="comment">//Name最多只有8个字节，需要手动解析来判断结尾</span></span><br><span class="line">		<span class="keyword">char</span> SectionName[<span class="number">9</span>] = &#123; <span class="number">0</span> &#125;;</span><br><span class="line">		<span class="built_in">memcpy</span>(SectionName, SectionHeader-&gt;Name, <span class="number">8</span> * <span class="keyword">sizeof</span>(<span class="keyword">char</span>));</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"* Name:%s\n"</span>, SectionName);</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"* Misc:%08x\n"</span>, SectionHeader-&gt;Misc.VirtualSize);</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"* VirtualAddress:%08x\n"</span>, SectionHeader-&gt;VirtualAddress);</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"* SizeOfRawData:%08x\n"</span>, SectionHeader-&gt;SizeOfRawData);</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"* PointerToRawData:%08x\n"</span>, SectionHeader-&gt;PointerToRawData);</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"PointerToRelocations:%08x\n"</span>, SectionHeader-&gt;PointerToRelocations);</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"PointerToLinenumbers:%08x\n"</span>, SectionHeader-&gt;PointerToLinenumbers);</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"NumberOfRelocations:%04x\n"</span>, SectionHeader-&gt;NumberOfRelocations);</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"NumberOfLinenumbers:%04x\n"</span>, SectionHeader-&gt;NumberOfLinenumbers);</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"* Characteristics:%08x\n"</span>, SectionHeader-&gt;Characteristics);</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"---------------------------------\n"</span>);</span><br><span class="line">		SectionHeader = SectionHeader + <span class="number">1</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span>* argv[])</span> </span>&#123;</span><br><span class="line">	FILE* tFile = fopen(<span class="string">"C:\\Users\\veselwuxin\\Desktop\\wtest.exe"</span>, <span class="string">"rb"</span>);</span><br><span class="line">	<span class="keyword">if</span> (tFile == <span class="literal">NULL</span>) &#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"file open failed\n"</span>);</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">int</span> <span class="built_in">size</span> = filesize(tFile);</span><br><span class="line">	<span class="keyword">char</span>* FileBuffer = (<span class="keyword">char</span>*)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(<span class="keyword">char</span>) * <span class="built_in">size</span>);</span><br><span class="line">	<span class="keyword">if</span> (!FileBuffer) &#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"Alloc FileBuffer Failed\n"</span>);</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">memset</span>(FileBuffer, <span class="number">0</span>, <span class="keyword">sizeof</span>(<span class="keyword">char</span>) * <span class="built_in">size</span>);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">int</span> freadsize = fread(FileBuffer, <span class="number">1</span>, <span class="keyword">sizeof</span>(<span class="keyword">char</span>) * <span class="built_in">size</span>, tFile);</span><br><span class="line">	<span class="keyword">if</span> (freadsize != <span class="keyword">sizeof</span>(<span class="keyword">char</span>) * <span class="built_in">size</span>) &#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"FileBuffer Write Failed\n"</span>);</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"FileBuffer address:%p\n"</span>, FileBuffer);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//_IMAGE_DOS_HEADER</span></span><br><span class="line">	<span class="comment">//_IMAGE_NT_HEADERS</span></span><br><span class="line">	<span class="comment">//_IMAGE_FILE_HEADER</span></span><br><span class="line">	<span class="comment">//_IMAGE_OPTIONAL_HEADER</span></span><br><span class="line">	<span class="comment">//_IMAGE_SECTION_HEADER</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">int</span> NT_addr = DOS_Header(FileBuffer);</span><br><span class="line">	<span class="keyword">int</span> SizeOfOptionalHeader = NT_Header(FileBuffer, NT_addr);</span><br><span class="line">	Section_Header(FileBuffer, NT_addr, SizeOfOptionalHeader);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="built_in">free</span>(FileBuffer);</span><br><span class="line">	FileBuffer = <span class="literal">NULL</span>;</span><br><span class="line">	tFile = <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="程序运行部分截图"><a href="#程序运行部分截图" class="headerlink" title="程序运行部分截图"></a>程序运行部分截图</h1><p><img src="/2020/03/02/PE%E8%8A%82%E8%A1%A8%E8%AF%B4%E6%98%8E/01.png" alt></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/02/29/PE%E5%A4%B4%E8%AF%B4%E6%98%8E/" rel="prev" title="PE头说明">
+      <i class="fa fa-chevron-left"></i> PE头说明
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#节表的结构及意义"><span class="nav-number">1.</span> <span class="nav-text">节表的结构及意义</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#节表解析代码"><span class="nav-number">2.</span> <span class="nav-text">节表解析代码</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#程序运行部分截图"><span class="nav-number">3.</span> <span class="nav-text">程序运行部分截图</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="wuxin"
+      src="/images/favicon.jpg">
+  <p class="site-author-name" itemprop="name">wuxin</p>
+  <div class="site-description" itemprop="description">记录红队相关学习笔记</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">28</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<!--统计代码-->
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!--百度统计-->
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?afb87f9d97811aac3cbf2f35d985b532";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">wuxin</span>
+</div>
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+<!--
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+-->
+  <span class="post-meta-divider">|</span>
+
+<!--
+  <div class="theme-info">主题 – <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.7.1
+  </div>
+-->
+
+<!--字数统计-->
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共28.3k字</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

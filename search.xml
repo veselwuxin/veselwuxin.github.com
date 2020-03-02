@@ -1,6 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>PE节表说明</title>
+    <url>/2020/03/02/PE%E8%8A%82%E8%A1%A8%E8%AF%B4%E6%98%8E/</url>
+    <content><![CDATA[<p>上一篇文章解析了PE结构的几个头，这次把节表的结构也写了进来。</p>
+<a id="more"></a>
+
+<p>节表储存着所有节的相关信息，节表就相当于是目录，告诉你某一个节在哪块，它的相关信息什么。</p>
+<h1 id="节表的结构及意义"><a href="#节表的结构及意义" class="headerlink" title="节表的结构及意义"></a>节表的结构及意义</h1><p>先直接给出节表的结构体方便后面的学习</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_SIZEOF_SHORT_NAME              8</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">IMAGE_SECTION_HEADER</span> &#123;</span></span><br><span class="line">    BYTE    Name[IMAGE_SIZEOF_SHORT_NAME];</span><br><span class="line">    <span class="keyword">union</span> &#123;</span><br><span class="line">            DWORD   PhysicalAddress;</span><br><span class="line">            DWORD   VirtualSize;</span><br><span class="line">    &#125; Misc;</span><br><span class="line">    DWORD   VirtualAddress;</span><br><span class="line">    DWORD   SizeOfRawData;</span><br><span class="line">    DWORD   PointerToRawData;</span><br><span class="line">    DWORD   PointerToRelocations;</span><br><span class="line">    DWORD   PointerToLinenumbers;</span><br><span class="line">    WORD    NumberOfRelocations;</span><br><span class="line">    WORD    NumberOfLinenumbers;</span><br><span class="line">    DWORD   Characteristics;</span><br><span class="line">&#125; IMAGE_SECTION_HEADER, *PIMAGE_SECTION_HEADER;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Name，可以看到第一个数组为名字，长度为8个字节，这里需要注意的是它并不是必须遵循 \0 结尾的规定，如果不以 \0 结尾，系统会自动截取8位进行处理。</li>
+<li>Misc，这是一个联合体，因为它们都是DWORD的长度，所以不需要过于区分，我们常用的都是VirtualSize，它是在没有对齐前的真实长度。</li>
+<li>VirtualAddress，它是在内存中的偏移地址。</li>
+<li>SizeOfRawData，在文件中对其后的长度。</li>
+<li>PointerToRawData，在文件中的偏移地址。</li>
+<li>PointerToRelocations、PointerToLinenumbers、NumberOfRelocations、NumberOfLinenumbers 这四个主要是在调试的时候去使用的，这里暂时先忽略掉。</li>
+<li>Characteristics，节的属性，由于节的名字是可以随便修改的，并不是说它叫<code>.date</code>，它就是数据段，我们需要通过属性来对其内容进行一个简要的判断。</li>
+</ul>
+<p>通过上面的结构可以很清楚的得到节表的长度为40个字节。</p>
+<h1 id="节表解析代码"><a href="#节表解析代码" class="headerlink" title="节表解析代码"></a>节表解析代码</h1><p>这里没有单独将节表的解析拉出来写，而是在上一篇的基础上增加的，所以这里将是PE头和节表的整体代码</p>
+<p>代码：<a href="https://github.com/veselwuxin/code.seclibs.com/blob/master/pe/Read_Section_Header.cpp" target="_blank" rel="noopener">GitHub</a></p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;windows.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">filesize</span><span class="params">(FILE* file)</span> </span>&#123;</span><br><span class="line">	fseek(file, <span class="number">0</span>, SEEK_END);</span><br><span class="line">	<span class="keyword">int</span> <span class="built_in">size</span> = ftell(file);</span><br><span class="line">	fseek(file, <span class="number">0</span>, SEEK_SET);</span><br><span class="line">	<span class="keyword">return</span> <span class="built_in">size</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">DOS_Header</span><span class="params">(LPSTR pFileBuffer)</span> </span>&#123;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"----------DOSHeader----------\n"</span>);</span><br><span class="line">	PIMAGE_DOS_HEADER pDosHeader = (PIMAGE_DOS_HEADER)pFileBuffer;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// *(PWORD)pDosHeader != IMAGE_DOS_SIGNATURE</span></span><br><span class="line">	<span class="keyword">if</span> ((WORD)pDosHeader-&gt;e_magic != IMAGE_DOS_SIGNATURE) &#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"DOSHeader failed:MZ"</span>);</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"*  e_magic:%x\n"</span>, (WORD)pDosHeader-&gt;e_magic);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"*  e_lfanew:%08x\n"</span>, (DWORD)pDosHeader-&gt;e_lfanew);</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">return</span> pDosHeader-&gt;e_lfanew;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">NT_Header</span><span class="params">(LPSTR pFileBuffer, <span class="keyword">int</span> NT_addr)</span> </span>&#123;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"----------NTHeader----------\n"</span>);</span><br><span class="line">	PIMAGE_NT_HEADERS pNtHeader = (PIMAGE_NT_HEADERS)(pFileBuffer + NT_addr);</span><br><span class="line">	<span class="keyword">if</span> ((WORD)pNtHeader-&gt;Signature != IMAGE_NT_SIGNATURE) &#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"NTHeader failed:NT"</span>);</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"Signature:%08x\n"</span>, (DWORD)pNtHeader-&gt;Signature);</span><br><span class="line"></span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"----------FileHeader----------\n"</span>);</span><br><span class="line">	PIMAGE_FILE_HEADER FileHeader = (PIMAGE_FILE_HEADER)((DWORD)pNtHeader + <span class="number">4</span>);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"*  Machine:%04x\n"</span>, FileHeader-&gt;Machine);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"*  NumberOfSections:%04x\n"</span>, FileHeader-&gt;NumberOfSections);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"TimeDateStamp:%08x\n"</span>, FileHeader-&gt;TimeDateStamp);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"*  SizeOfOptionalHeader:%04x\n"</span>, FileHeader-&gt;SizeOfOptionalHeader);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"Characteristics:%04x\n"</span>, FileHeader-&gt;Characteristics);</span><br><span class="line"></span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"----------OptionalHeader----------\n"</span>);</span><br><span class="line">	PIMAGE_OPTIONAL_HEADER32 OptionalHeader = (PIMAGE_OPTIONAL_HEADER32)((DWORD)pNtHeader + <span class="number">4</span> + <span class="keyword">sizeof</span>(_IMAGE_FILE_HEADER));</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"*  Magic:%04x\n"</span>, OptionalHeader-&gt;Magic);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"- SizeOfCode:%08x\n"</span>, OptionalHeader-&gt;SizeOfCode);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"- SizeOfInitializedData:%08x\n"</span>, OptionalHeader-&gt;SizeOfInitializedData);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"- SizeOfUninitializedData:%08x\n"</span>, OptionalHeader-&gt;SizeOfUninitializedData);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"*  AddressOfEntryPoint:%08x\n"</span>, OptionalHeader-&gt;AddressOfEntryPoint);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"- BaseOfCode:%08x\n"</span>, OptionalHeader-&gt;BaseOfCode);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"- BaseOfData:%08x\n"</span>, OptionalHeader-&gt;BaseOfData);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"*  ImageBase:%08x\n"</span>, OptionalHeader-&gt;ImageBase);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"*  SectionAlignment:%08x\n"</span>, OptionalHeader-&gt;SectionAlignment);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"*  FileAlignment:%08x\n"</span>, OptionalHeader-&gt;FileAlignment);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"*  SizeOfImage:%08x\n"</span>, OptionalHeader-&gt;SizeOfImage);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"*  SizeOfHeaders:%08x\n"</span>, OptionalHeader-&gt;SizeOfHeaders);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"CheckSum:%08x\n"</span>, OptionalHeader-&gt;CheckSum);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"SizeOfStackReserve:%08x\n"</span>, OptionalHeader-&gt;SizeOfStackReserve);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"SizeOfStackCommit:%08x\n"</span>, OptionalHeader-&gt;SizeOfStackCommit);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"SizeOfHeapReserve:%08x\n"</span>, OptionalHeader-&gt;SizeOfHeapReserve);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"SizeOfHeapCommit:%08x\n"</span>, OptionalHeader-&gt;SizeOfHeapCommit);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"NumberOfRvaAndSizes:%08x\n"</span>, OptionalHeader-&gt;NumberOfRvaAndSizes);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> FileHeader-&gt;SizeOfOptionalHeader;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Section_Header</span><span class="params">(LPSTR pFileBuffer, <span class="keyword">int</span> NT_addr, <span class="keyword">int</span> SizeOfOptionalHeader)</span> </span>&#123;</span><br><span class="line">	PIMAGE_FILE_HEADER FileHeader = (PIMAGE_FILE_HEADER)(pFileBuffer + NT_addr + <span class="number">4</span>);</span><br><span class="line">	<span class="keyword">int</span> NumberOfSections = FileHeader-&gt;NumberOfSections;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"----------SectionHeader----------\n"</span>);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"SectionNum:%x\n"</span>, NumberOfSections);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"---------------------------------\n"</span>);</span><br><span class="line">	PIMAGE_SECTION_HEADER SectionHeader = (PIMAGE_SECTION_HEADER)(pFileBuffer + NT_addr + <span class="number">4</span> + <span class="keyword">sizeof</span>(_IMAGE_FILE_HEADER) + SizeOfOptionalHeader);</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; NumberOfSections; i++) &#123;</span><br><span class="line">		<span class="comment">//Name最多只有8个字节，需要手动解析来判断结尾</span></span><br><span class="line">		<span class="keyword">char</span> SectionName[<span class="number">9</span>] = &#123; <span class="number">0</span> &#125;;</span><br><span class="line">		<span class="built_in">memcpy</span>(SectionName, SectionHeader-&gt;Name, <span class="number">8</span> * <span class="keyword">sizeof</span>(<span class="keyword">char</span>));</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"* Name:%s\n"</span>, SectionName);</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"* Misc:%08x\n"</span>, SectionHeader-&gt;Misc.VirtualSize);</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"* VirtualAddress:%08x\n"</span>, SectionHeader-&gt;VirtualAddress);</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"* SizeOfRawData:%08x\n"</span>, SectionHeader-&gt;SizeOfRawData);</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"* PointerToRawData:%08x\n"</span>, SectionHeader-&gt;PointerToRawData);</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"PointerToRelocations:%08x\n"</span>, SectionHeader-&gt;PointerToRelocations);</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"PointerToLinenumbers:%08x\n"</span>, SectionHeader-&gt;PointerToLinenumbers);</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"NumberOfRelocations:%04x\n"</span>, SectionHeader-&gt;NumberOfRelocations);</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"NumberOfLinenumbers:%04x\n"</span>, SectionHeader-&gt;NumberOfLinenumbers);</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"* Characteristics:%08x\n"</span>, SectionHeader-&gt;Characteristics);</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"---------------------------------\n"</span>);</span><br><span class="line">		SectionHeader = SectionHeader + <span class="number">1</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span>* argv[])</span> </span>&#123;</span><br><span class="line">	FILE* tFile = fopen(<span class="string">"C:\\Users\\veselwuxin\\Desktop\\wtest.exe"</span>, <span class="string">"rb"</span>);</span><br><span class="line">	<span class="keyword">if</span> (tFile == <span class="literal">NULL</span>) &#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"file open failed\n"</span>);</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">int</span> <span class="built_in">size</span> = filesize(tFile);</span><br><span class="line">	<span class="keyword">char</span>* FileBuffer = (<span class="keyword">char</span>*)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(<span class="keyword">char</span>) * <span class="built_in">size</span>);</span><br><span class="line">	<span class="keyword">if</span> (!FileBuffer) &#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"Alloc FileBuffer Failed\n"</span>);</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">memset</span>(FileBuffer, <span class="number">0</span>, <span class="keyword">sizeof</span>(<span class="keyword">char</span>) * <span class="built_in">size</span>);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">int</span> freadsize = fread(FileBuffer, <span class="number">1</span>, <span class="keyword">sizeof</span>(<span class="keyword">char</span>) * <span class="built_in">size</span>, tFile);</span><br><span class="line">	<span class="keyword">if</span> (freadsize != <span class="keyword">sizeof</span>(<span class="keyword">char</span>) * <span class="built_in">size</span>) &#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"FileBuffer Write Failed\n"</span>);</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"FileBuffer address:%p\n"</span>, FileBuffer);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//_IMAGE_DOS_HEADER</span></span><br><span class="line">	<span class="comment">//_IMAGE_NT_HEADERS</span></span><br><span class="line">	<span class="comment">//_IMAGE_FILE_HEADER</span></span><br><span class="line">	<span class="comment">//_IMAGE_OPTIONAL_HEADER</span></span><br><span class="line">	<span class="comment">//_IMAGE_SECTION_HEADER</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">int</span> NT_addr = DOS_Header(FileBuffer);</span><br><span class="line">	<span class="keyword">int</span> SizeOfOptionalHeader = NT_Header(FileBuffer, NT_addr);</span><br><span class="line">	Section_Header(FileBuffer, NT_addr, SizeOfOptionalHeader);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="built_in">free</span>(FileBuffer);</span><br><span class="line">	FileBuffer = <span class="literal">NULL</span>;</span><br><span class="line">	tFile = <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="程序运行部分截图"><a href="#程序运行部分截图" class="headerlink" title="程序运行部分截图"></a>程序运行部分截图</h1><p><img src="/2020/03/02/PE%E8%8A%82%E8%A1%A8%E8%AF%B4%E6%98%8E/01.png" alt></p>
+]]></content>
+      <categories>
+        <category>PE</category>
+      </categories>
+  </entry>
+  <entry>
     <title>PE头说明</title>
     <url>/2020/02/29/PE%E5%A4%B4%E8%AF%B4%E6%98%8E/</url>
     <content><![CDATA[<p>对PE头的了解直接决定了对它的利用程度</p>
@@ -88,6 +118,35 @@
       </categories>
   </entry>
   <entry>
+    <title>基于数组越界的缓冲区溢出</title>
+    <url>/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/</url>
+    <content><![CDATA[<p>上一篇文章说了函数调用时候的堆栈变化，这里就基于这个内容来验证一下基于数组越界的缓冲区溢出。</p>
+<a id="more"></a>
+
+<p>在c语言中，数组必须是静态的，也就是在定义的时候必须明确数组的大小，在根本上来说，这个是堆栈提升的原因，只有在数组的大小确定的时候，才能明确堆栈到底要提升多少，如果数组的大小是动态变化的，就极容易发生缓冲区溢出；而且c语言也不具备Java等语言中静态分析的功能，不会去检测数组是否有上溢或者下溢，其边界的检验是有程序员负责的，所以这就造成了一些问题，我们可以通过数组越界来改变一些内容。</p>
+<p>首先来看一下这次的实验程序</p>
+<p><img src="/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/image-36.png" alt></p>
+<p>正常来说，test1函数并没有被调用，所以是不会打印出12345的，而实际的情况却不是这样的</p>
+<p><img src="/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/image-37.png" alt></p>
+<p>造成这样的情况，就是由于数组越界而造成的缓冲区溢出，这其中还有一个编译器的坑，在后面再解释。</p>
+<p>我们直接在数组处下断点，前面的提升堆栈等操作就不细说了，前一篇文章已经走过一边流程了，这里直接给出到这一步的堆栈图。</p>
+<p><img src="/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/image-41.png" alt></p>
+<p>然后我们看一下编译器是如何处理数组赋值的内容的</p>
+<p><img src="/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/image-40.png" alt></p>
+<p>经过这段赋值操作，此时堆栈已经变成了下图，这里单独从中拎出来10行方便观看。</p>
+<p><img src="/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/image-42.png" alt></p>
+<p>通过堆栈图我们可以很清晰的看到，明明只有8个数，它确是从ebp-24h开始排的，也就是说ebp-4的位置是没有使用的，这个也就是前面所说的坑，经过查询资料，发现从vs2010开始，ebp-4就都没有使用，具体是用来做什么的，暂时还不清楚，所以如果这里你使用的是vc6.0的话，这里就是从ebp-4开始排的。</p>
+<p>好了说了上面那个坑，接着回来说堆栈图，在上一篇文章里我们已经很清楚函数在调用的时候会先把call语句的下一行地址压入栈中，所以图中b[10]的位置也就代表了ret返回地址的位置，在vc6.0中此处应该是b[9]，如果我们将这个地址替换为我们想让程序到达的位置，也就可以控制程序的运行轨迹了。</p>
+<p><img src="/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/image-43.png" alt></p>
+<p>在后面的操作就是将test1函数的地址赋给了b[10]，也就代替了之前函数的返回地址，这个函数在执行完成后便会返回test1函数的位置081137Ah。</p>
+<p><img src="/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/image-44.png" alt></p>
+<p>也就达到了缓冲区溢出的效果。</p>
+]]></content>
+      <categories>
+        <category>汇编</category>
+      </categories>
+  </entry>
+  <entry>
     <title>函数调用堆栈图-c语言</title>
     <url>/2020/02/14/%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8%E5%A0%86%E6%A0%88%E5%9B%BE-c%E8%AF%AD%E8%A8%80/</url>
     <content><![CDATA[<p>我们就使用一个简单的c语言程序来对描述一下在函数调用的时候都发生了什么。</p>
@@ -149,50 +208,6 @@
       </categories>
   </entry>
   <entry>
-    <title>基于数组越界的缓冲区溢出</title>
-    <url>/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/</url>
-    <content><![CDATA[<p>上一篇文章说了函数调用时候的堆栈变化，这里就基于这个内容来验证一下基于数组越界的缓冲区溢出。</p>
-<a id="more"></a>
-
-<p>在c语言中，数组必须是静态的，也就是在定义的时候必须明确数组的大小，在根本上来说，这个是堆栈提升的原因，只有在数组的大小确定的时候，才能明确堆栈到底要提升多少，如果数组的大小是动态变化的，就极容易发生缓冲区溢出；而且c语言也不具备Java等语言中静态分析的功能，不会去检测数组是否有上溢或者下溢，其边界的检验是有程序员负责的，所以这就造成了一些问题，我们可以通过数组越界来改变一些内容。</p>
-<p>首先来看一下这次的实验程序</p>
-<p><img src="/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/image-36.png" alt></p>
-<p>正常来说，test1函数并没有被调用，所以是不会打印出12345的，而实际的情况却不是这样的</p>
-<p><img src="/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/image-37.png" alt></p>
-<p>造成这样的情况，就是由于数组越界而造成的缓冲区溢出，这其中还有一个编译器的坑，在后面再解释。</p>
-<p>我们直接在数组处下断点，前面的提升堆栈等操作就不细说了，前一篇文章已经走过一边流程了，这里直接给出到这一步的堆栈图。</p>
-<p><img src="/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/image-41.png" alt></p>
-<p>然后我们看一下编译器是如何处理数组赋值的内容的</p>
-<p><img src="/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/image-40.png" alt></p>
-<p>经过这段赋值操作，此时堆栈已经变成了下图，这里单独从中拎出来10行方便观看。</p>
-<p><img src="/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/image-42.png" alt></p>
-<p>通过堆栈图我们可以很清晰的看到，明明只有8个数，它确是从ebp-24h开始排的，也就是说ebp-4的位置是没有使用的，这个也就是前面所说的坑，经过查询资料，发现从vs2010开始，ebp-4就都没有使用，具体是用来做什么的，暂时还不清楚，所以如果这里你使用的是vc6.0的话，这里就是从ebp-4开始排的。</p>
-<p>好了说了上面那个坑，接着回来说堆栈图，在上一篇文章里我们已经很清楚函数在调用的时候会先把call语句的下一行地址压入栈中，所以图中b[10]的位置也就代表了ret返回地址的位置，在vc6.0中此处应该是b[9]，如果我们将这个地址替换为我们想让程序到达的位置，也就可以控制程序的运行轨迹了。</p>
-<p><img src="/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/image-43.png" alt></p>
-<p>在后面的操作就是将test1函数的地址赋给了b[10]，也就代替了之前函数的返回地址，这个函数在执行完成后便会返回test1函数的位置081137Ah。</p>
-<p><img src="/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/image-44.png" alt></p>
-<p>也就达到了缓冲区溢出的效果。</p>
-]]></content>
-      <categories>
-        <category>汇编</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>算法之二分查找（上）-c语言实现</title>
-    <url>/2020/02/07/%E7%AE%97%E6%B3%95%E4%B9%8B%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE%EF%BC%88%E4%B8%8A%EF%BC%89-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/</url>
-    <content><![CDATA[<p>使用递归来实现的，逻辑比较简单，也不是太复杂的东西，直接上代码了</p>
-<a id="more"></a>
-
-<p>如果需要下载代码，请移步至文末</p>
-<p><img src="/2020/02/07/%E7%AE%97%E6%B3%95%E4%B9%8B%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE%EF%BC%88%E4%B8%8A%EF%BC%89-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/carbon-7.png" alt></p>
-<p>代码：<a href="https://github.com/veselwuxin/code.seclibs.com/blob/master/c/Simple_binary_search.c" target="_blank" rel="noopener">GitHub</a></p>
-]]></content>
-      <categories>
-        <category>数据结构与算法</category>
-        <category>C/C++</category>
-      </categories>
-  </entry>
-  <entry>
     <title>算法之二分查找（上）</title>
     <url>/2020/02/07/%E7%AE%97%E6%B3%95%E4%B9%8B%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE%EF%BC%88%E4%B8%8A%EF%BC%89/</url>
     <content><![CDATA[<p>二分查找在平时的生活中也挺常用的，比如说以前玩的猜数游戏，每次都取中间数，然后得知是大了，还是小了，这个例子也就是二分查找。</p>
@@ -213,6 +228,21 @@
 ]]></content>
       <categories>
         <category>数据结构与算法</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>算法之二分查找（上）-c语言实现</title>
+    <url>/2020/02/07/%E7%AE%97%E6%B3%95%E4%B9%8B%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE%EF%BC%88%E4%B8%8A%EF%BC%89-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/</url>
+    <content><![CDATA[<p>使用递归来实现的，逻辑比较简单，也不是太复杂的东西，直接上代码了</p>
+<a id="more"></a>
+
+<p>如果需要下载代码，请移步至文末</p>
+<p><img src="/2020/02/07/%E7%AE%97%E6%B3%95%E4%B9%8B%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE%EF%BC%88%E4%B8%8A%EF%BC%89-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/carbon-7.png" alt></p>
+<p>代码：<a href="https://github.com/veselwuxin/code.seclibs.com/blob/master/c/Simple_binary_search.c" target="_blank" rel="noopener">GitHub</a></p>
+]]></content>
+      <categories>
+        <category>数据结构与算法</category>
+        <category>C/C++</category>
       </categories>
   </entry>
   <entry>
@@ -400,6 +430,22 @@
       </categories>
   </entry>
   <entry>
+    <title>算法之排序（上）-c语言实现</title>
+    <url>/2020/02/03/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%8A%EF%BC%89-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/</url>
+    <content><![CDATA[<p>在上一篇文章中，我们说了时间复杂度为 O(n<sup>2</sup>)的几个排序算法</p>
+<a id="more"></a>
+
+<p>在上一篇文章中，我们说了时间复杂度为 O(n<sup>2</sup>)的几个排序算法，冒泡排序、插入排序、选择排序，在理解上和实现上都没有太难的地方，这里在实现的时候，没有再自己实现数组或链表，而是使用了c语言自带的数组进行实现的，代码中没有太难理解的地方，就直接上代码了</p>
+<p>如果需要下载代码，请移步文末</p>
+<p><img src="/2020/02/03/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%8A%EF%BC%89-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/carbon-5.png" alt></p>
+<p>代码：<a href="https://github.com/veselwuxin/code.seclibs.com/blob/master/c/Bubble_Insertion_Selection_Sort.c" target="_blank" rel="noopener">GitHub</a></p>
+]]></content>
+      <categories>
+        <category>数据结构与算法</category>
+        <category>C/C++</category>
+      </categories>
+  </entry>
+  <entry>
     <title>算法之排序（上）</title>
     <url>/2020/02/03/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%8A%EF%BC%89/</url>
     <content><![CDATA[<p>排序算法有很多种，甚至有很多都完全没有听过，我们最常见，也最经典的就是：冒泡排序、插入排序、选择排序、归并排序、快速排序、计数排序、基数排序、桶排序。</p>
@@ -454,22 +500,6 @@
 ]]></content>
       <categories>
         <category>数据结构与算法</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>算法之排序（上）-c语言实现</title>
-    <url>/2020/02/03/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%8A%EF%BC%89-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/</url>
-    <content><![CDATA[<p>在上一篇文章中，我们说了时间复杂度为 O(n<sup>2</sup>)的几个排序算法</p>
-<a id="more"></a>
-
-<p>在上一篇文章中，我们说了时间复杂度为 O(n<sup>2</sup>)的几个排序算法，冒泡排序、插入排序、选择排序，在理解上和实现上都没有太难的地方，这里在实现的时候，没有再自己实现数组或链表，而是使用了c语言自带的数组进行实现的，代码中没有太难理解的地方，就直接上代码了</p>
-<p>如果需要下载代码，请移步文末</p>
-<p><img src="/2020/02/03/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%8A%EF%BC%89-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/carbon-5.png" alt></p>
-<p>代码：<a href="https://github.com/veselwuxin/code.seclibs.com/blob/master/c/Bubble_Insertion_Selection_Sort.c" target="_blank" rel="noopener">GitHub</a></p>
-]]></content>
-      <categories>
-        <category>数据结构与算法</category>
-        <category>C/C++</category>
       </categories>
   </entry>
   <entry>
