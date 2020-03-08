@@ -250,7 +250,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2020-03-08 14:50:25 / 修改时间：22:51:19" itemprop="dateCreated datePublished" datetime="2020-03-08T14:50:25+08:00">2020-03-08</time>
+              <time title="创建时间：2020-03-08 14:50:25 / 修改时间：22:54:25" itemprop="dateCreated datePublished" datetime="2020-03-08T14:50:25+08:00">2020-03-08</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -275,48 +275,15 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <a id="more"></a>
-<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>由于在xp之后采用了ASLR（随机地址加载）的方案，导致每次启动后，程序加载的地址都不一样，这里我从xp系统中把calc拷到了win10，还有一个是用了名为PETool的PE结构查看工具，为什么要选取它们两个来举例，因为calc的文件对齐和内存对其是不一样的，而PETool的文件对其和内存对齐是一样的。</p>
-<h1 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h1><p>我们在实验的时候，往程序中添加一个弹框来作为效果演示，这里我们就需要得到MessageBox函数的地址，然后在程序中进行添加跳转。</p>
-<p>这里我直接写了一个只含有MessageBox的程序来进行定位，直接下断点得到函数位置为<code>77020C30 user32.MessageBoxA</code>，这里需要明确一下，每一次重启后函数的位置是会发生变化的</p>
-<p>得到函数地址后还需要明确，在函数调用之前，需要将其所需要的参数<code>push</code>进堆栈中，这里仅需要弹框，所以就<code>push</code>进四个<code>0x00</code>即可，<code>push</code>指令的硬编码是<code>6A</code>，所以需要添加的代码就变成了<code>6A 00 6A 00 6A 00 6A 00</code></p>
-<p>后面在调用MessageBox函数的时候，需要使用<code>call</code>指令，它的硬编码为<code>E8</code>；调用完以后需要跳回到原本的程序入口点，使用<code>jmp</code>指令，它的硬编码为<code>E9</code>.</p>
-<h1 id="calc"><a href="#calc" class="headerlink" title="calc"></a>calc</h1><p>首先对后面需要的一些信息进行记录</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">AddressOfEntryPoint     12475h</span><br><span class="line">ImageBase     1000000h</span><br><span class="line">SectionAlignment     1000h</span><br><span class="line">FileAlignment     200h</span><br><span class="line"></span><br><span class="line">VirtualAddress     1000h</span><br><span class="line">PointerToRawData     400h</span><br></pre></td></tr></table></figure>
-
-<p>我们将代码添加到<code>.text</code>节的后面，它本身就具有执行权限，不需要对权限进行更改</p>
-<p>记录一下需要添加代码的位置<code>12AB0h</code></p>
-<p><img src="/2020/03/08/%E6%89%8B%E5%8A%A8%E5%90%91%E5%8F%AF%E6%89%A7%E8%A1%8C%E7%A8%8B%E5%BA%8F%E6%B7%BB%E5%8A%A0%E4%BB%A3%E7%A0%81/01.png" alt></p>
-<p>接下来直接上计算公式</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">E8后边的值 &#x3D; 真正要跳转的地址 - （E8当前指令的地址 + E8当前指令所占大小）</span><br><span class="line">&#x3D; 真正要跳转的地址 - E8当前指令的下一行地址</span><br></pre></td></tr></table></figure>
-
-<p>但是需要注意，下一行的地址是需要计算它在内存中的地址，所以可以计算得<code>77020C30-(12ABD-400+1000+1000000)=7600D573‬‬</code></p>
-<p>E9后面的值也是同样的计算方法<code>1012475-(12AC2-400+1000+1000000)=FFFFEDB3‬‬</code></p>
-<p>写入后为</p>
-<p><img src="/2020/03/08/%E6%89%8B%E5%8A%A8%E5%90%91%E5%8F%AF%E6%89%A7%E8%A1%8C%E7%A8%8B%E5%BA%8F%E6%B7%BB%E5%8A%A0%E4%BB%A3%E7%A0%81/02.png" alt></p>
-<p>接着该修改程序的入口地址了，将入口地址修改为我们添加代码的位置，这里还是需要计算内存中的地址的，但不需要加ImageBase，因为它本来就是偏移地址，<code>12AB0-400+1000=136B0‬</code></p>
-<p><img src="/2020/03/08/%E6%89%8B%E5%8A%A8%E5%90%91%E5%8F%AF%E6%89%A7%E8%A1%8C%E7%A8%8B%E5%BA%8F%E6%B7%BB%E5%8A%A0%E4%BB%A3%E7%A0%81/03.png" alt></p>
-<p>到这里就完成了，保存后执行</p>
-<p><img src="/2020/03/08/%E6%89%8B%E5%8A%A8%E5%90%91%E5%8F%AF%E6%89%A7%E8%A1%8C%E7%A8%8B%E5%BA%8F%E6%B7%BB%E5%8A%A0%E4%BB%A3%E7%A0%81/04.png" alt></p>
-<p><img src="/2020/03/08/%E6%89%8B%E5%8A%A8%E5%90%91%E5%8F%AF%E6%89%A7%E8%A1%8C%E7%A8%8B%E5%BA%8F%E6%B7%BB%E5%8A%A0%E4%BB%A3%E7%A0%81/05.png" alt></p>
-<p>弹窗后，成功弹出计算机</p>
-<h1 id="PETool"><a href="#PETool" class="headerlink" title="PETool"></a>PETool</h1><p>这个就更简单的，方法还是一样的方法，由于它的内存对齐和文件对齐是一致的，所以不需要进行转换了</p>
-<p>记录信息</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">AddressOfEntryPoint     193BEh</span><br><span class="line">ImageBase     400000h</span><br><span class="line">SectionAlignment     1000h</span><br><span class="line">FileAlignment     1000h</span><br><span class="line"></span><br><span class="line">VirtualAddress     1000h</span><br><span class="line">PointerToRawData     1000h</span><br></pre></td></tr></table></figure>
-
-<p>需要把代码插在<code>1CAA0h</code></p>
-<p><img src="/2020/03/08/%E6%89%8B%E5%8A%A8%E5%90%91%E5%8F%AF%E6%89%A7%E8%A1%8C%E7%A8%8B%E5%BA%8F%E6%B7%BB%E5%8A%A0%E4%BB%A3%E7%A0%81/06.png" alt></p>
-<p>E8:<code>77020C30-41CAAD=76C04183‬‬</code></p>
-<p>E9:<code>4193BE-41CAB2=FFFFC90C‬</code></p>
-<p>修改后为</p>
-<p><img src="/2020/03/08/%E6%89%8B%E5%8A%A8%E5%90%91%E5%8F%AF%E6%89%A7%E8%A1%8C%E7%A8%8B%E5%BA%8F%E6%B7%BB%E5%8A%A0%E4%BB%A3%E7%A0%81/07.png" alt></p>
-<p>然后修改OEP，<code>1CAA0</code></p>
-<p><img src="/2020/03/08/%E6%89%8B%E5%8A%A8%E5%90%91%E5%8F%AF%E6%89%A7%E8%A1%8C%E7%A8%8B%E5%BA%8F%E6%B7%BB%E5%8A%A0%E4%BB%A3%E7%A0%81/08.png" alt></p>
-<p>保存后执行</p>
-<p><img src="/2020/03/08/%E6%89%8B%E5%8A%A8%E5%90%91%E5%8F%AF%E6%89%A7%E8%A1%8C%E7%A8%8B%E5%BA%8F%E6%B7%BB%E5%8A%A0%E4%BB%A3%E7%A0%81/09.png" alt></p>
-<p><img src="/2020/03/08/%E6%89%8B%E5%8A%A8%E5%90%91%E5%8F%AF%E6%89%A7%E8%A1%8C%E7%A8%8B%E5%BA%8F%E6%B7%BB%E5%8A%A0%E4%BB%A3%E7%A0%81/10.png" alt></p>
-<p>弹窗后，成功弹出程序</p>
-
+          <p>手动向可执行程序添加代码</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/03/08/%E6%89%8B%E5%8A%A8%E5%90%91%E5%8F%AF%E6%89%A7%E8%A1%8C%E7%A8%8B%E5%BA%8F%E6%B7%BB%E5%8A%A0%E4%BB%A3%E7%A0%81/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 

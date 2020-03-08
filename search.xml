@@ -3,7 +3,8 @@
   <entry>
     <title>手动向可执行程序添加代码</title>
     <url>/2020/03/08/%E6%89%8B%E5%8A%A8%E5%90%91%E5%8F%AF%E6%89%A7%E8%A1%8C%E7%A8%8B%E5%BA%8F%E6%B7%BB%E5%8A%A0%E4%BB%A3%E7%A0%81/</url>
-    <content><![CDATA[<a id="more"></a>
+    <content><![CDATA[<p>手动向可执行程序添加代码</p>
+<a id="more"></a>
 <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>由于在xp之后采用了ASLR（随机地址加载）的方案，导致每次启动后，程序加载的地址都不一样，这里我从xp系统中把calc拷到了win10，还有一个是用了名为PETool的PE结构查看工具，为什么要选取它们两个来举例，因为calc的文件对齐和内存对其是不一样的，而PETool的文件对其和内存对齐是一样的。</p>
 <h1 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h1><p>我们在实验的时候，往程序中添加一个弹框来作为效果演示，这里我们就需要得到MessageBox函数的地址，然后在程序中进行添加跳转。</p>
 <p>这里我直接写了一个只含有MessageBox的程序来进行定位，直接下断点得到函数位置为<code>77020C30 user32.MessageBoxA</code>，这里需要明确一下，每一次重启后函数的位置是会发生变化的</p>
