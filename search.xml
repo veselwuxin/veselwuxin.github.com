@@ -1,6 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>手动向可执行程序添加代码</title>
+    <url>/2020/03/08/%E6%89%8B%E5%8A%A8%E5%90%91%E5%8F%AF%E6%89%A7%E8%A1%8C%E7%A8%8B%E5%BA%8F%E6%B7%BB%E5%8A%A0%E4%BB%A3%E7%A0%81/</url>
+    <content><![CDATA[<a id="more"></a>
+<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>由于在xp之后采用了ASLR（随机地址加载）的方案，导致每次启动后，程序加载的地址都不一样，这里我从xp系统中把calc拷到了win10，还有一个是用了名为PETool的PE结构查看工具，为什么要选取它们两个来举例，因为calc的文件对齐和内存对其是不一样的，而PETool的文件对其和内存对齐是一样的。</p>
+<h1 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h1><p>我们在实验的时候，往程序中添加一个弹框来作为效果演示，这里我们就需要得到MessageBox函数的地址，然后在程序中进行添加跳转。</p>
+<p>这里我直接写了一个只含有MessageBox的程序来进行定位，直接下断点得到函数位置为<code>77020C30 user32.MessageBoxA</code>，这里需要明确一下，每一次重启后函数的位置是会发生变化的</p>
+<p>得到函数地址后还需要明确，在函数调用之前，需要将其所需要的参数<code>push</code>进堆栈中，这里仅需要弹框，所以就<code>push</code>进四个<code>0x00</code>即可，<code>push</code>指令的硬编码是<code>6A</code>，所以需要添加的代码就变成了<code>6A 00 6A 00 6A 00 6A 00</code></p>
+<p>后面在调用MessageBox函数的时候，需要使用<code>call</code>指令，它的硬编码为<code>E8</code>；调用完以后需要跳回到原本的程序入口点，使用<code>jmp</code>指令，它的硬编码为<code>E9</code>.</p>
+<h1 id="calc"><a href="#calc" class="headerlink" title="calc"></a>calc</h1><p>首先对后面需要的一些信息进行记录</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">AddressOfEntryPoint     12475h</span><br><span class="line">ImageBase     1000000h</span><br><span class="line">SectionAlignment     1000h</span><br><span class="line">FileAlignment     200h</span><br><span class="line"></span><br><span class="line">VirtualAddress     1000h</span><br><span class="line">PointerToRawData     400h</span><br></pre></td></tr></table></figure>
+
+<p>我们将代码添加到<code>.text</code>节的后面，它本身就具有执行权限，不需要对权限进行更改</p>
+<p>记录一下需要添加代码的位置<code>12AB0h</code></p>
+<p><img src="/2020/03/08/%E6%89%8B%E5%8A%A8%E5%90%91%E5%8F%AF%E6%89%A7%E8%A1%8C%E7%A8%8B%E5%BA%8F%E6%B7%BB%E5%8A%A0%E4%BB%A3%E7%A0%81/01.png" alt></p>
+<p>接下来直接上计算公式</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">E8后边的值 &#x3D; 真正要跳转的地址 - （E8当前指令的地址 + E8当前指令所占大小）</span><br><span class="line">&#x3D; 真正要跳转的地址 - E8当前指令的下一行地址</span><br></pre></td></tr></table></figure>
+
+<p>但是需要注意，下一行的地址是需要计算它在内存中的地址，所以可以计算得<code>77020C30-(12ABD-400+1000+1000000)=7600D573‬‬</code></p>
+<p>E9后面的值也是同样的计算方法<code>1012475-(12AC2-400+1000+1000000)=FFFFEDB3‬‬</code></p>
+<p>写入后为</p>
+<p><img src="/2020/03/08/%E6%89%8B%E5%8A%A8%E5%90%91%E5%8F%AF%E6%89%A7%E8%A1%8C%E7%A8%8B%E5%BA%8F%E6%B7%BB%E5%8A%A0%E4%BB%A3%E7%A0%81/02.png" alt></p>
+<p>接着该修改程序的入口地址了，将入口地址修改为我们添加代码的位置，这里还是需要计算内存中的地址的，但不需要加ImageBase，因为它本来就是偏移地址，<code>12AB0-400+1000=136B0‬</code></p>
+<p><img src="/2020/03/08/%E6%89%8B%E5%8A%A8%E5%90%91%E5%8F%AF%E6%89%A7%E8%A1%8C%E7%A8%8B%E5%BA%8F%E6%B7%BB%E5%8A%A0%E4%BB%A3%E7%A0%81/03.png" alt></p>
+<p>到这里就完成了，保存后执行</p>
+<p><img src="/2020/03/08/%E6%89%8B%E5%8A%A8%E5%90%91%E5%8F%AF%E6%89%A7%E8%A1%8C%E7%A8%8B%E5%BA%8F%E6%B7%BB%E5%8A%A0%E4%BB%A3%E7%A0%81/04.png" alt></p>
+<p><img src="/2020/03/08/%E6%89%8B%E5%8A%A8%E5%90%91%E5%8F%AF%E6%89%A7%E8%A1%8C%E7%A8%8B%E5%BA%8F%E6%B7%BB%E5%8A%A0%E4%BB%A3%E7%A0%81/05.png" alt></p>
+<p>弹窗后，成功弹出计算机</p>
+<h1 id="PETool"><a href="#PETool" class="headerlink" title="PETool"></a>PETool</h1><p>这个就更简单的，方法还是一样的方法，由于它的内存对齐和文件对齐是一致的，所以不需要进行转换了</p>
+<p>记录信息</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">AddressOfEntryPoint     193BEh</span><br><span class="line">ImageBase     400000h</span><br><span class="line">SectionAlignment     1000h</span><br><span class="line">FileAlignment     1000h</span><br><span class="line"></span><br><span class="line">VirtualAddress     1000h</span><br><span class="line">PointerToRawData     1000h</span><br></pre></td></tr></table></figure>
+
+<p>需要把代码插在<code>1CAA0h</code></p>
+<p><img src="/2020/03/08/%E6%89%8B%E5%8A%A8%E5%90%91%E5%8F%AF%E6%89%A7%E8%A1%8C%E7%A8%8B%E5%BA%8F%E6%B7%BB%E5%8A%A0%E4%BB%A3%E7%A0%81/06.png" alt></p>
+<p>E8:<code>77020C30-41CAAD=76C04183‬‬</code></p>
+<p>E9:<code>4193BE-41CAB2=FFFFC90C‬</code></p>
+<p>修改后为</p>
+<p><img src="/2020/03/08/%E6%89%8B%E5%8A%A8%E5%90%91%E5%8F%AF%E6%89%A7%E8%A1%8C%E7%A8%8B%E5%BA%8F%E6%B7%BB%E5%8A%A0%E4%BB%A3%E7%A0%81/07.png" alt></p>
+<p>然后修改OEP，<code>1CAA0</code></p>
+<p><img src="/2020/03/08/%E6%89%8B%E5%8A%A8%E5%90%91%E5%8F%AF%E6%89%A7%E8%A1%8C%E7%A8%8B%E5%BA%8F%E6%B7%BB%E5%8A%A0%E4%BB%A3%E7%A0%81/08.png" alt></p>
+<p>保存后执行</p>
+<p><img src="/2020/03/08/%E6%89%8B%E5%8A%A8%E5%90%91%E5%8F%AF%E6%89%A7%E8%A1%8C%E7%A8%8B%E5%BA%8F%E6%B7%BB%E5%8A%A0%E4%BB%A3%E7%A0%81/09.png" alt></p>
+<p><img src="/2020/03/08/%E6%89%8B%E5%8A%A8%E5%90%91%E5%8F%AF%E6%89%A7%E8%A1%8C%E7%A8%8B%E5%BA%8F%E6%B7%BB%E5%8A%A0%E4%BB%A3%E7%A0%81/10.png" alt></p>
+<p>弹窗后，成功弹出程序</p>
+]]></content>
+      <categories>
+        <category>PE</category>
+      </categories>
+  </entry>
+  <entry>
     <title>PE加载过程</title>
     <url>/2020/03/02/PE%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B/</url>
     <content><![CDATA[<p>前面对PE结构都有了一定的了解，现在就到了对PE应用的阶段了</p>
@@ -137,6 +186,35 @@
       </categories>
   </entry>
   <entry>
+    <title>基于数组越界的缓冲区溢出</title>
+    <url>/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/</url>
+    <content><![CDATA[<p>上一篇文章说了函数调用时候的堆栈变化，这里就基于这个内容来验证一下基于数组越界的缓冲区溢出。</p>
+<a id="more"></a>
+
+<p>在c语言中，数组必须是静态的，也就是在定义的时候必须明确数组的大小，在根本上来说，这个是堆栈提升的原因，只有在数组的大小确定的时候，才能明确堆栈到底要提升多少，如果数组的大小是动态变化的，就极容易发生缓冲区溢出；而且c语言也不具备Java等语言中静态分析的功能，不会去检测数组是否有上溢或者下溢，其边界的检验是有程序员负责的，所以这就造成了一些问题，我们可以通过数组越界来改变一些内容。</p>
+<p>首先来看一下这次的实验程序</p>
+<p><img src="/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/image-36.png" alt></p>
+<p>正常来说，test1函数并没有被调用，所以是不会打印出12345的，而实际的情况却不是这样的</p>
+<p><img src="/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/image-37.png" alt></p>
+<p>造成这样的情况，就是由于数组越界而造成的缓冲区溢出，这其中还有一个编译器的坑，在后面再解释。</p>
+<p>我们直接在数组处下断点，前面的提升堆栈等操作就不细说了，前一篇文章已经走过一边流程了，这里直接给出到这一步的堆栈图。</p>
+<p><img src="/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/image-41.png" alt></p>
+<p>然后我们看一下编译器是如何处理数组赋值的内容的</p>
+<p><img src="/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/image-40.png" alt></p>
+<p>经过这段赋值操作，此时堆栈已经变成了下图，这里单独从中拎出来10行方便观看。</p>
+<p><img src="/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/image-42.png" alt></p>
+<p>通过堆栈图我们可以很清晰的看到，明明只有8个数，它确是从ebp-24h开始排的，也就是说ebp-4的位置是没有使用的，这个也就是前面所说的坑，经过查询资料，发现从vs2010开始，ebp-4就都没有使用，具体是用来做什么的，暂时还不清楚，所以如果这里你使用的是vc6.0的话，这里就是从ebp-4开始排的。</p>
+<p>好了说了上面那个坑，接着回来说堆栈图，在上一篇文章里我们已经很清楚函数在调用的时候会先把call语句的下一行地址压入栈中，所以图中b[10]的位置也就代表了ret返回地址的位置，在vc6.0中此处应该是b[9]，如果我们将这个地址替换为我们想让程序到达的位置，也就可以控制程序的运行轨迹了。</p>
+<p><img src="/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/image-43.png" alt></p>
+<p>在后面的操作就是将test1函数的地址赋给了b[10]，也就代替了之前函数的返回地址，这个函数在执行完成后便会返回test1函数的位置081137Ah。</p>
+<p><img src="/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/image-44.png" alt></p>
+<p>也就达到了缓冲区溢出的效果。</p>
+]]></content>
+      <categories>
+        <category>汇编</category>
+      </categories>
+  </entry>
+  <entry>
     <title>函数调用堆栈图-c语言</title>
     <url>/2020/02/14/%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8%E5%A0%86%E6%A0%88%E5%9B%BE-c%E8%AF%AD%E8%A8%80/</url>
     <content><![CDATA[<p>我们就使用一个简单的c语言程序来对描述一下在函数调用的时候都发生了什么。</p>
@@ -198,50 +276,6 @@
       </categories>
   </entry>
   <entry>
-    <title>基于数组越界的缓冲区溢出</title>
-    <url>/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/</url>
-    <content><![CDATA[<p>上一篇文章说了函数调用时候的堆栈变化，这里就基于这个内容来验证一下基于数组越界的缓冲区溢出。</p>
-<a id="more"></a>
-
-<p>在c语言中，数组必须是静态的，也就是在定义的时候必须明确数组的大小，在根本上来说，这个是堆栈提升的原因，只有在数组的大小确定的时候，才能明确堆栈到底要提升多少，如果数组的大小是动态变化的，就极容易发生缓冲区溢出；而且c语言也不具备Java等语言中静态分析的功能，不会去检测数组是否有上溢或者下溢，其边界的检验是有程序员负责的，所以这就造成了一些问题，我们可以通过数组越界来改变一些内容。</p>
-<p>首先来看一下这次的实验程序</p>
-<p><img src="/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/image-36.png" alt></p>
-<p>正常来说，test1函数并没有被调用，所以是不会打印出12345的，而实际的情况却不是这样的</p>
-<p><img src="/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/image-37.png" alt></p>
-<p>造成这样的情况，就是由于数组越界而造成的缓冲区溢出，这其中还有一个编译器的坑，在后面再解释。</p>
-<p>我们直接在数组处下断点，前面的提升堆栈等操作就不细说了，前一篇文章已经走过一边流程了，这里直接给出到这一步的堆栈图。</p>
-<p><img src="/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/image-41.png" alt></p>
-<p>然后我们看一下编译器是如何处理数组赋值的内容的</p>
-<p><img src="/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/image-40.png" alt></p>
-<p>经过这段赋值操作，此时堆栈已经变成了下图，这里单独从中拎出来10行方便观看。</p>
-<p><img src="/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/image-42.png" alt></p>
-<p>通过堆栈图我们可以很清晰的看到，明明只有8个数，它确是从ebp-24h开始排的，也就是说ebp-4的位置是没有使用的，这个也就是前面所说的坑，经过查询资料，发现从vs2010开始，ebp-4就都没有使用，具体是用来做什么的，暂时还不清楚，所以如果这里你使用的是vc6.0的话，这里就是从ebp-4开始排的。</p>
-<p>好了说了上面那个坑，接着回来说堆栈图，在上一篇文章里我们已经很清楚函数在调用的时候会先把call语句的下一行地址压入栈中，所以图中b[10]的位置也就代表了ret返回地址的位置，在vc6.0中此处应该是b[9]，如果我们将这个地址替换为我们想让程序到达的位置，也就可以控制程序的运行轨迹了。</p>
-<p><img src="/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/image-43.png" alt></p>
-<p>在后面的操作就是将test1函数的地址赋给了b[10]，也就代替了之前函数的返回地址，这个函数在执行完成后便会返回test1函数的位置081137Ah。</p>
-<p><img src="/2020/02/14/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E8%B6%8A%E7%95%8C%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/image-44.png" alt></p>
-<p>也就达到了缓冲区溢出的效果。</p>
-]]></content>
-      <categories>
-        <category>汇编</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>算法之二分查找（上）-c语言实现</title>
-    <url>/2020/02/07/%E7%AE%97%E6%B3%95%E4%B9%8B%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE%EF%BC%88%E4%B8%8A%EF%BC%89-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/</url>
-    <content><![CDATA[<p>使用递归来实现的，逻辑比较简单，也不是太复杂的东西，直接上代码了</p>
-<a id="more"></a>
-
-<p>如果需要下载代码，请移步至文末</p>
-<p><img src="/2020/02/07/%E7%AE%97%E6%B3%95%E4%B9%8B%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE%EF%BC%88%E4%B8%8A%EF%BC%89-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/carbon-7.png" alt></p>
-<p>代码：<a href="https://github.com/veselwuxin/code.seclibs.com/blob/master/c/Simple_binary_search.c" target="_blank" rel="noopener">GitHub</a></p>
-]]></content>
-      <categories>
-        <category>数据结构与算法</category>
-        <category>C/C++</category>
-      </categories>
-  </entry>
-  <entry>
     <title>算法之二分查找（上）</title>
     <url>/2020/02/07/%E7%AE%97%E6%B3%95%E4%B9%8B%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE%EF%BC%88%E4%B8%8A%EF%BC%89/</url>
     <content><![CDATA[<p>二分查找在平时的生活中也挺常用的，比如说以前玩的猜数游戏，每次都取中间数，然后得知是大了，还是小了，这个例子也就是二分查找。</p>
@@ -262,6 +296,21 @@
 ]]></content>
       <categories>
         <category>数据结构与算法</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>算法之二分查找（上）-c语言实现</title>
+    <url>/2020/02/07/%E7%AE%97%E6%B3%95%E4%B9%8B%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE%EF%BC%88%E4%B8%8A%EF%BC%89-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/</url>
+    <content><![CDATA[<p>使用递归来实现的，逻辑比较简单，也不是太复杂的东西，直接上代码了</p>
+<a id="more"></a>
+
+<p>如果需要下载代码，请移步至文末</p>
+<p><img src="/2020/02/07/%E7%AE%97%E6%B3%95%E4%B9%8B%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE%EF%BC%88%E4%B8%8A%EF%BC%89-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/carbon-7.png" alt></p>
+<p>代码：<a href="https://github.com/veselwuxin/code.seclibs.com/blob/master/c/Simple_binary_search.c" target="_blank" rel="noopener">GitHub</a></p>
+]]></content>
+      <categories>
+        <category>数据结构与算法</category>
+        <category>C/C++</category>
       </categories>
   </entry>
   <entry>
@@ -388,29 +437,6 @@
       </categories>
   </entry>
   <entry>
-    <title>算法之排序（中）-c语言实现</title>
-    <url>/2020/02/04/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%AD%EF%BC%89-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/</url>
-    <content><![CDATA[<p>上一篇文章里说了归并排序和快速排序，它们的代码实现是非常相似的，只要理解了其中的具体实现，还是比较容易写出代码的。</p>
-<a id="more"></a>
-
-<p>归并排序</p>
-<p>代码如下，需要下载代码的请移步至文末</p>
-<p><img src="/2020/02/04/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%AD%EF%BC%89-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/carbon-6.png" alt></p>
-<hr>
-<p>快速排序</p>
-<p>代码如下，需要下载代码的请移步至文末</p>
-<p><img src="/2020/02/04/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%AD%EF%BC%89-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/carbon-1-2.png" alt></p>
-<hr>
-<p>代码：</p>
-<p>归并排序：<a href="https://github.com/veselwuxin/code.seclibs.com/blob/master/c/Merge_Sort.c" target="_blank" rel="noopener">GitHub</a></p>
-<p>快速排序：<a href="https://github.com/veselwuxin/code.seclibs.com/blob/master/c/Quick_Sort.c" target="_blank" rel="noopener">GitHub</a></p>
-]]></content>
-      <categories>
-        <category>数据结构与算法</category>
-        <category>C/C++</category>
-      </categories>
-  </entry>
-  <entry>
     <title>算法之排序（中）</title>
     <url>/2020/02/04/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%AD%EF%BC%89/</url>
     <content><![CDATA[<p>上一篇文章说了时间复杂度为O(n2)的冒泡、插入和选择三个排序方式</p>
@@ -446,6 +472,29 @@
 ]]></content>
       <categories>
         <category>数据结构与算法</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>算法之排序（中）-c语言实现</title>
+    <url>/2020/02/04/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%AD%EF%BC%89-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/</url>
+    <content><![CDATA[<p>上一篇文章里说了归并排序和快速排序，它们的代码实现是非常相似的，只要理解了其中的具体实现，还是比较容易写出代码的。</p>
+<a id="more"></a>
+
+<p>归并排序</p>
+<p>代码如下，需要下载代码的请移步至文末</p>
+<p><img src="/2020/02/04/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%AD%EF%BC%89-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/carbon-6.png" alt></p>
+<hr>
+<p>快速排序</p>
+<p>代码如下，需要下载代码的请移步至文末</p>
+<p><img src="/2020/02/04/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%AD%EF%BC%89-c%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0/carbon-1-2.png" alt></p>
+<hr>
+<p>代码：</p>
+<p>归并排序：<a href="https://github.com/veselwuxin/code.seclibs.com/blob/master/c/Merge_Sort.c" target="_blank" rel="noopener">GitHub</a></p>
+<p>快速排序：<a href="https://github.com/veselwuxin/code.seclibs.com/blob/master/c/Quick_Sort.c" target="_blank" rel="noopener">GitHub</a></p>
+]]></content>
+      <categories>
+        <category>数据结构与算法</category>
+        <category>C/C++</category>
       </categories>
   </entry>
   <entry>
