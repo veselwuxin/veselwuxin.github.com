@@ -48,19 +48,13 @@
   };
 </script>
 
-  <meta name="description" content="在上一篇文章中我们提到了时间复杂度大O分析法的使用，这次继续来探究时间复杂度的分析">
-<meta property="og:type" content="article">
-<meta property="og:title" content="时间复杂度分析">
-<meta property="og:url" content="https://blog.seclibs.com/2020/01/20/%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%E5%88%86%E6%9E%90/index.html">
+  <meta name="description" content="记录红队相关学习笔记">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Vesel『无心』&#39;Blog">
+<meta property="og:url" content="https://blog.seclibs.com/archives/2020/04/index.html">
 <meta property="og:site_name" content="Vesel『无心』&#39;Blog">
-<meta property="og:description" content="在上一篇文章中我们提到了时间复杂度大O分析法的使用，这次继续来探究时间复杂度的分析">
+<meta property="og:description" content="记录红队相关学习笔记">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://blog.seclibs.com/2020/01/20/%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%E5%88%86%E6%9E%90/carbon-1.png">
-<meta property="og:image" content="https://blog.seclibs.com/2020/01/20/%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%E5%88%86%E6%9E%90/carbon-1-1.png">
-<meta property="og:image" content="https://blog.seclibs.com/2020/01/20/%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%E5%88%86%E6%9E%90/d889a358b8eccc5bbb90fc16e327a22f.jpg">
-<meta property="og:image" content="https://blog.seclibs.com/2020/01/20/%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%E5%88%86%E6%9E%90/36c0aabdac69032f8a43368f5e90c67f.jpg">
-<meta property="article:published_time" content="2020-01-20T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-02-19T22:18:42.574Z">
 <meta property="article:author" content="wuxin">
 <meta property="article:tag" content="红队学习">
 <meta property="article:tag" content="红队笔记">
@@ -79,9 +73,8 @@
 <meta property="article:tag" content="无心的梦呓">
 <meta property="article:tag" content="wuxinmengyi">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://blog.seclibs.com/2020/01/20/%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%E5%88%86%E6%9E%90/carbon-1.png">
 
-<link rel="canonical" href="https://blog.seclibs.com/2020/01/20/%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%E5%88%86%E6%9E%90/">
+<link rel="canonical" href="https://blog.seclibs.com/archives/2020/04/">
 
 
 <script id="page-configurations">
@@ -89,11 +82,11 @@
   CONFIG.page = {
     sidebar: "",
     isHome: false,
-    isPost: true
+    isPost: false
   };
 </script>
 
-  <title>时间复杂度分析 | Vesel『无心』'Blog</title>
+  <title>归档 | Vesel『无心』'Blog</title>
   
 
 
@@ -227,123 +220,50 @@
           <div class="content">
             
 
-  <div class="posts-expand">
-      
   
   
-  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://blog.seclibs.com/2020/01/20/%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%E5%88%86%E6%9E%90/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/favicon.jpg">
-      <meta itemprop="name" content="wuxin">
-      <meta itemprop="description" content="记录红队相关学习笔记">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Vesel『无心』'Blog">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          时间复杂度分析
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-01-21 00:00:00" itemprop="dateCreated datePublished" datetime="2020-01-21T00:00:00+08:00">2020-01-21</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-02-20 06:18:42" itemprop="dateModified" datetime="2020-02-20T06:18:42+08:00">2020-02-20</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index">
-                    <span itemprop="name">数据结构与算法</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
+  
+  <div class="post-block">
+    <div class="posts-collapse">
+      <div class="collection-title">
+        
+        <span class="collection-header">还行! 目前共计 31 篇日志。 继续努力。</span>
+      </div>
 
       
-        <p>在上一篇文章中我们提到了时间复杂度大O分析法的使用，这次继续来探究时间复杂度的分析</p>
-<a id="more"></a>
-
-<p>我们先来看一下下面这段代码</p>
-<p><img src="/2020/01/20/%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%E5%88%86%E6%9E%90/carbon-1.png" alt></p>
-<p>这段代码的作用是在数组中寻找x的位置，找到了直接返回位置，没有找到的话返回-1，用上一篇文章所学到的知识，可以很清楚的看出来，这段代码的时间复杂度为O(n)</p>
-<p>但是这段代码明显还有优化的空间，如果我们在数组中间寻找到x的话，就不需要把整个数组都循环一边了，所以可以优化为下面这段代码。</p>
-<p><img src="/2020/01/20/%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%E5%88%86%E6%9E%90/carbon-1-1.png" alt></p>
-<p>如果在这种情况下的话，就不能用上一次所说到的方法来衡量了，因为我们不知道需要寻找的x所在的位置在哪里，如果在第一个的话，它的时间复杂度就是O(1)，如果这个数组里没有的话，就需要全部遍历一遍，它的时间复杂度就是O(n)，这里就需要引入<strong>最好时间复杂度</strong>和<strong>最坏时间复杂度</strong></p>
-<p>顾名思义，最好时间复杂度就是在最理想的状态下的时间复杂度，就是我们前面说的，所需要找的x恰好是数组的第一个字符，时间复杂度为O(1)</p>
-<p>最坏时间复杂度就是在最糟糕的情况下的时间复杂度，就是前面说的需要寻找的x不在数组中的情况，时间复杂度就是O(n)</p>
-<p>但是问题又来了，不管是最好还是最坏，它们发生的概率都是非常小的，都不能真正代表它的时间复杂度，这里我们就需要再引入一个概念：<strong>平均时间复杂度</strong></p>
-<p>还是前面的例子，我们把x在每一个位置上所需要便利的个数都加起来然后再处以总次数n+1来求平均，这样的话我们就能够得到平均时间复杂度了</p>
-<p><img src="/2020/01/20/%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%E5%88%86%E6%9E%90/d889a358b8eccc5bbb90fc16e327a22f.jpg" alt></p>
-<p>这里提供一个化简的思路，使用高中所学的倒序相加法来进行化简，在化简得到这个值以后，因为在大O表示法中是可以省略系数、低阶和常量的，所以最后得到的平均时间复杂度为O(n)</p>
-<p>虽然这样得到的结论是没有任何问题的，但是在计算的过程中还是有一些出入的，因为这n+1种情况出现的概率是不一样的，所以在每一个数计算的时候还需要乘上相对应的概率才可以，具体的运算情况如下</p>
-<blockquote>
-<p>我们知道，要查找的变量 x，要么在数组里，要么就不在数组里。这两种情况对应的概率统计起来很麻烦，为了方便你理解，我们假设在数组中与不在数组中的概率都为 1/2。另外，要查找的数据出现在 0～n-1 这 n 个位置的概率也是一样的，为 1/n。</p>
-<p>所以，根据概率乘法法则，要查找的数据出现在 0～n-1 中任意位置的概率就是 1/(2n)。因此，前面的推导过程中存在的最大问题就是，没有将各种情况发生的概率考虑进去。</p>
-<p>如果我们把每种情况发生的概率也考虑进去，那平均时间复杂度的计算过程就变成了这样：</p>
-<p><img src="/2020/01/20/%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%E5%88%86%E6%9E%90/36c0aabdac69032f8a43368f5e90c67f.jpg" alt></p>
-<p>这个值就是概率论中的加权平均值，也叫作期望值，所以平均时间复杂度的全称应该叫加权平均时间复杂度或者期望时间复杂度。</p>
-<p>引入概率之后，前面那段代码的加权平均值为 (3n+1)/4。用大 O 表示法来表示，去掉系数和常量，这段代码的加权平均时间复杂度仍然是 O(n)。</p>
-</blockquote>
-<p>到这里基本我们常用的时间复杂度就说完了，但是还有一种特殊的平均时间复杂度，那就是<strong>均摊时间复杂度</strong></p>
-<p>均摊时间复杂度就是把耗时多的平均到耗时少的上面，一般都是不会遇到的，而且，在能够应用均摊时间复杂度分析的场合，一般均摊时间复杂度就等于最好情况时间复杂度，所以就不再过多的提它了，因为连平均时间复杂度的应用条件都是极其苛刻的，均摊时间复杂度就更是极少会碰到了，明白最好时间复杂度和最坏时间复杂度就可以了。</p>
-
+    <div class="collection-year">
+      <h1 class="collection-header">2020</h1>
     </div>
 
-    
-    
-    
+  <article itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
 
-      <footer class="post-footer">
+      <div class="post-meta">
+        <time itemprop="dateCreated"
+              datetime="2020-04-18T06:55:11+08:00"
+              content="2020-04-18">
+          04-18
+        </time>
+      </div>
 
-        
+      <h2 class="post-title">
+          <a class="post-title-link" href="/2020/04/17/%E6%89%8B%E5%8A%A8%E7%BC%96%E5%86%99C%E5%87%BD%E6%95%B0%E7%9A%84%E6%B1%87%E7%BC%96%E4%BB%A3%E7%A0%81/" itemprop="url">
+            <span itemprop="name">手动编写C函数的汇编代码</span>
+          </a>
+      </h2>
 
-
-        
-    <div class="post-nav">
-      <div class="post-nav-item">
-    <a href="/2020/01/12/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%E5%88%9D%E6%AD%A5%E8%AE%A4%E8%AF%86/" rel="prev" title="数据结构与算法初步认识">
-      <i class="fa fa-chevron-left"></i> 数据结构与算法初步认识
-    </a></div>
-      <div class="post-nav-item">
-    <a href="/2020/01/21/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E6%95%B0%E7%BB%84/" rel="next" title="数据结构之数组">
-      数据结构之数组 <i class="fa fa-chevron-right"></i>
-    </a></div>
-    </div>
-      </footer>
-    
+    </header>
   </article>
+
+
+    </div>
+  </div>
   
   
   
 
-  </div>
+  
+
 
 
           </div>
