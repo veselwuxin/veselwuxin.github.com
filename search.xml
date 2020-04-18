@@ -6,6 +6,8 @@
     <content><![CDATA[<blockquote>
 <p>在前面的文章里已经清楚计算机是只认识0和1的，那平时编写的程序到运行中间又经历了什么？</p>
 </blockquote>
+<a id="more"></a>
+
 <p>这个过程用下面一张图就足以说明所有的问题了<br><img src="/2020/04/17/%E6%89%8B%E5%8A%A8%E7%BC%96%E5%86%99C%E5%87%BD%E6%95%B0%E7%9A%84%E6%B1%87%E7%BC%96%E4%BB%A3%E7%A0%81/01.png" alt></p>
 <p>稍微解释一下其中的一些含义</p>
 <blockquote>
